@@ -34,7 +34,8 @@ noobaa_db:
     requests:
       cpu: '0.2'
       memory: 2Gi
-ocs_operator_channel: stable-4.2
+ocs_version: 4.3
+ocs_operator_channel: "stable-{{ocs_version}}"
 ceph_storage_requests: 100Gi
 ocs_source_namespace: openshift-marketplace
 ocs_source: redhat-operators

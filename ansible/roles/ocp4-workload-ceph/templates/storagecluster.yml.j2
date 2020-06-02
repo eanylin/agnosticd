@@ -4,7 +4,6 @@ metadata:
   namespace: {{ ceph_namespace }}
   name: ocs-storagecluster
 spec:
-  manageNodes: false
   resources:
     mon:
       requests:
@@ -27,21 +26,22 @@ spec:
         cpu: {{ noobaa_db.resources.requests.cpu }}
         memory: {{ noobaa_db.resources.requests.memory }}
   storageDeviceSets:
-  - name: ocs-deviceset
-    count: 1
-    replica: 3
-    resources:
-      requests:
-        cpu: {{ ceph_osd.resources.requests.cpu }}
-        memory: {{ ceph_osd.resources.requests.memory }}
-    placement: {}
-    dataPVCTemplate:
-      spec:
-        storageClassName: gp2
-        accessModes:
-        - ReadWriteOnce
-        volumeMode: Block
-        resources:
-          requests:
-            storage: {{ ceph_storage_requests| default('200Gi') }}
-    portable: true
+    - name: ocs-deviceset
+      count: 1
+      replica: 3
+      resources:
+        requests:
+          cpu: {{ ceph_osd.resources.requests.cpu }}
+          memory: {{ ceph_osd.resources.requests.memory }}
+      placement: {}
+      dataPVCTemplate:
+        spec:
+          storageClassName: gp2
+          accessModes:
+            - ReadWriteOnce
+          volumeMode: Block
+          resources:
+            requests:
+              storage: {{ ceph_storage_requests| default('200Gi') }}
+      portable: true      
+  version: {{ocs_version}}.0

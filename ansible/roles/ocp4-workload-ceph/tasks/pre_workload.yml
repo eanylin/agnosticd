@@ -16,14 +16,18 @@
 
 - name: "Adding Ceph labels to worker nodes"
   shell: "oc label nodes --overwrite {{ item }} cluster.ocs.openshift.io/openshift-storage=''"
-  loop: "{{ ceph_worker_nodes }}"
+  loop: "{{ ceph_worker_nodes[:3] }}"
 
 # Create Namespace
 - name: "Creating namespace"
   k8s:
-    name: "{{ ceph_namespace }}"
-    api_version: v1
-    kind: Namespace
+    definition:  
+      metadata:
+        name: "{{ ceph_namespace }}"
+        apiVersion: v1
+        labels:
+          openshift.io/cluster-monitoring: 'true'
+      kind: Namespace
     state: present
 
 - name: pre_workload Tasks Complete
