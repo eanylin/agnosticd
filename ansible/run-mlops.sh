@@ -1,6 +1,6 @@
 #!/bin/bash
 
-OCP_USERNAME="admin"
+OCP_USERNAME="opentlc-mgr"
 WORKLOAD="ocp4-workload-mlops"
 USER_COUNT=5
 
@@ -11,5 +11,4 @@ ansible-playbook -i localhost, -c local ./configs/ocp-workloads/ocp-workload.yml
     -e"ocp_username=${OCP_USERNAME}" \
     -e"ocp_workload=${WORKLOAD}" \
     -e"silent=False" \
-    -e"user_count=${USER_COUNT}" 
-
+    -e"num_users=${USER_COUNT}" 

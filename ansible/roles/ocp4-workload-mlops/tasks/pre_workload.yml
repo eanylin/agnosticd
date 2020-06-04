@@ -54,6 +54,13 @@
     - "ocp_username: {{ ocp_username }}"
     #- "bastion host: {{ bastion_fqdn }}"
 
+- name: Configure OpenShift Container Storage 4
+  include_role: 
+    name: ocp4-workload-ceph
+  vars:
+    ceph_storage_requests: 500Gi
+    set_cephfs_default_sc: true
+  
 # Leave this as the last task in the playbook.
 - name: pre_workload tasks complete
   debug:

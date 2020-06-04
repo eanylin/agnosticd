@@ -39,3 +39,4 @@ ocs_operator_channel: "stable-{{ocs_version}}"
 ceph_storage_requests: 100Gi
 ocs_source_namespace: openshift-marketplace
 ocs_source: redhat-operators
+set_cephfs_default_sc: false

@@ -54,6 +54,28 @@
     - {api_version: 'ceph.rook.io/v1', kind: 'CephBlockPool', name: 'ocs-storagecluster-cephblockpool'} 
     - {api_version: 'ocs.openshift.io/v1', kind: 'OCSInitialization', name: 'ocsinit'} 
 
+- name: Set CephFS as default storage class
+  k8s:
+    definition:
+      kind: StorageClass
+      apiVersion: storage.k8s.io/v1
+      metadata:
+        name: gp2
+        annotations:
+          storageclass.kubernetes.io/is-default-class: 'false'
+  when: set_cephfs_default_sc
+
+- name: Set CephFS as default storage class
+  k8s:
+    definition:
+      kind: StorageClass
+      apiVersion: storage.k8s.io/v1
+      metadata:
+        name: ocs-storagecluster-cephfs
+        annotations:
+          storageclass.kubernetes.io/is-default-class: 'true'
+  when: set_cephfs_default_sc
+
 - name: workload Tasks Complete
   debug:
     msg: workload Tasks Complete
