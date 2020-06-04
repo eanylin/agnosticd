@@ -11,6 +11,6 @@
 
 - name: add scc and roles in project {{ name }} for user {{ user }}
   shell: |
-    #oc adm policy add-scc-to-user anyuid -z default -n {{ name }}
-    #oc adm policy add-scc-to-user privileged -z default -n {{ name }}
+    oc adm policy add-scc-to-user anyuid -z default -n {{ name }}
+    oc adm policy add-scc-to-user privileged -z default -n {{ name }}
     oc adm policy add-role-to-user admin {{ user }} -n {{ name }}
