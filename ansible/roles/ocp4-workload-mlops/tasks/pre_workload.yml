@@ -54,6 +54,18 @@
     - "ocp_username: {{ ocp_username }}"
     #- "bastion host: {{ bastion_fqdn }}"
 
+- name: Get the number of worker nodes
+  k8s_info:
+    kind: Node
+    api_version: v1
+    label_selectors:
+      - node-role.kubernetes.io/worker          
+  register: nodes
+  
+- fail:
+    msg: OCS 4 requires a min of 3 workers 
+  when: nodes.resources | length < 3
+
 - name: Configure OpenShift Container Storage 4
   include_role: 
     name: ocp4-workload-ceph
