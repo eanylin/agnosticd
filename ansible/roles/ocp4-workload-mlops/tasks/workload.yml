@@ -204,21 +204,21 @@
 #   include_tasks: install-username-distribution.yaml
 
 # Install CodeReady Workspaces
-- name: see if codeready is installed
-  k8s_facts:
-    api_version: org.eclipse.che/v1
-    kind: CheCluster
-    name: codeready-workspaces
-    namespace: labs-infra
-  register: r_codeready_cr
+# - name: see if codeready is installed
+#   k8s_facts:
+#     api_version: org.eclipse.che/v1
+#     kind: CheCluster
+#     name: codeready-workspaces
+#     namespace: labs-infra
+#   register: r_codeready_cr
 
-- name: show codeready cr
-  debug:
-    msg: "existing codeready project: {{ r_codeready_cr }}"
+# - name: show codeready cr
+#   debug:
+#     msg: "existing codeready project: {{ r_codeready_cr }}"
 
-- name: install codeready
-#  when: r_codeready_cr.resources | list | length == 0
-  include_tasks: install-codeready.yaml
+# - name: install codeready
+#   when: r_codeready_cr.resources | list | length == 0
+#   include_tasks: install-codeready.yaml
 
 # Leave this as the last task in the playbook.
 - name: workload tasks complete
