@@ -1,0 +1,15 @@
+apiVersion: kfdef.apps.kubeflow.org/v1
+kind: KfDef
+metadata:
+  name: odh-seldon
+  namespace: openshift-operators
+spec:
+  applications:
+    - kustomizeConfig:
+        repoRef:
+          name: manifests
+          path: odhseldon/cluster
+      name: odhseldon
+  repos:
+    - name: manifests
+      uri: https://github.com/tsailiming/odh-manifests/tarball/master

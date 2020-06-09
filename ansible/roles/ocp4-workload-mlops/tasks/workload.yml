@@ -88,6 +88,9 @@
           openshift.io/description: ""
           openshift.io/display-name: "Lab Infrastructure"
 
+- name: install ODH
+  include_tasks: install-odh.yaml
+
 # Search for rhamt
 # - name: Search for RHAMT
 #   when: ("m1" in modules)

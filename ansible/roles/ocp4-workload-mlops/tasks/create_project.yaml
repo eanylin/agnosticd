@@ -8,6 +8,8 @@
     definition:
       metadata:
         name: "{{ name }}"
+        labels:
+          prometheus.io/scrape: "true"
 
 - name: add scc and roles in project {{ name }} for user {{ user }}
   shell: |

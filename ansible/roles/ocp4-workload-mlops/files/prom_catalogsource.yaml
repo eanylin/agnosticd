@@ -1,0 +1,9 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: prometheus-operator
+  namespace: openshift-marketplace  
+spec:
+  displayName: Prometheus Operator Registry
+  image: 'quay.io/ltsai/prometheus-operator-registry:0.37.0'
+  sourceType: grpc
