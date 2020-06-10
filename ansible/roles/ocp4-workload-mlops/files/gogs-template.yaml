@@ -5,6 +5,7 @@ metadata:
     description: The Gogs git server (https://gogs.io/)
     tags: instant-app,gogs,go,golang
   name: gogs
+  namespace: openshift
 objects:
 - kind: ServiceAccount
   apiVersion: v1
@@ -140,6 +141,9 @@ objects:
     host: ${HOSTNAME}
     to:
       name: ${APPLICATION_NAME}
+    tls:
+      termination: edge
+      insecureEdgeTerminationPolicy: Redirect
 - kind: DeploymentConfig
   apiVersion: v1
   metadata:

@@ -1,0 +1,92 @@
+---
+- name: Check for template
+  k8s_info:
+    kind: Template
+    api_version: template.openshift.io/v1
+    namespace: openshift
+    name: gogs      
+  register: templates
+
+- name: Create gogs template
+  command: "oc create -f {{role_path}}/files/gogs-template.yaml"
+  when: templates.resources | length == 0
+
+- name: Check for gogs
+  k8s_info:
+    kind: DeploymentConfig
+    api_version: apps.openshift.io/v1
+    namespace: labs-infra
+    name: gogs      
+  register: dc
+
+- name: Create gogs
+  command: "oc new-app --template=gogs -n labs-infra -p HOSTNAME=gogs-labs-infra.{{ route_subdomain }}"
+  when: dc.resources | length == 0
+
+- name: Wait for gogs to be ready
+  uri:
+    url: https://gogs-labs-infra.{{ route_subdomain }}/
+    validate_certs: false
+  register: result
+  until: result.status == 200
+  retries: 50
+  delay: 10
+
+- name: create gogs admin user '{{ gogs_admin_user }}'
+  uri:
+    url: https://gogs-labs-infra.{{ route_subdomain }}/user/sign_up
+    method: POST
+    body: "user_name={{ gogs_admin_user }}&password={{ gogs_admin_password }}&&retype={{ gogs_admin_password }}&&email={{ gogs_admin_user }}@gogs.com"
+    headers:
+      Content-Type: "application/x-www-form-urlencoded"
+    status_code: 302,200
+
+# - name: Add user to Gogs
+#   uri:
+#     url: https://gogs-labs-infra.{{ route_subdomain }}/api/v1/admin/users
+#     method: POST
+#     user: "{{ gogs_admin_user }}"
+#     password: "{{ gogs_admin_password }}"
+#     force_basic_auth: true
+#     headers:
+#       Content-Type: application/json
+#     body:
+#       login_name: "{{ item }}"
+#       username: "{{ item }}"
+#       email: "{{ item }}@no-reply.com"
+#       password: "{{ gogs_pwd }}"
+#     body_format: json
+#     status_code: 200,201,204
+#   loop: "{{users}}"
+
+#  - name: Check if repository {{ repository.name }} exists in git for user "{{ my_user }}"
+#   uri:
+#     url: https://{{ gogs_hostname }}/api/v1/repos/{{ my_user }}/{{ repository.name }}
+#     user: "{{ my_user }}"
+#     password: "{{ gogs_password }}"
+#     force_basic_auth: true
+#     status_code: 200,404
+#   register: repo_result
+
+# - name: Create git repository {{ repository.name }} for user "{{ my_user }}"
+#   uri:
+#     url: https://{{ gogs_hostname }}/api/v1/user/repos
+#     method: POST
+#     body: '{"name": "{{ repository.name }}", "private": false}'
+#     body_format: json
+#     user: "{{ my_user }}"
+#     password: "{{ gogs_password }}"
+#     status_code: 200,201
+#     force_basic_auth: true
+#   when: repo_result.status != 200
+
+# - name: Push {{ repository.name }} to git repository in Gogs for user "{{ my_user }}"
+#   shell: |
+#     git remote add {{ my_user }} https://{{ my_user }}:{{ gogs_password }}@{{ gogs_hostname }}/{{ my_user }}/{{ repository.name }}.git
+#     git config --local user.email "{{ my_user }}@example.com"
+#     git config --local user.name "{{ my_user }}"
+#     git push -f --all {{ my_user }}
+#   args:
+#     chdir: "{{ tmp_dir }}/{{ repository.name }}"
+#   when: repo_result.status != 200    
+    
