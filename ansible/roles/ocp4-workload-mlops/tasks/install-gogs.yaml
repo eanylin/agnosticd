@@ -32,14 +32,14 @@
   retries: 50
   delay: 10
 
-- name: create gogs admin user '{{ gogs_admin_user }}'
-  uri:
-    url: https://gogs-labs-infra.{{ route_subdomain }}/user/sign_up
-    method: POST
-    body: "user_name={{ gogs_admin_user }}&password={{ gogs_admin_password }}&&retype={{ gogs_admin_password }}&&email={{ gogs_admin_user }}@gogs.com"
-    headers:
-      Content-Type: "application/x-www-form-urlencoded"
-    status_code: 302,200
+# - name: create gogs admin user '{{ gogs_admin_user }}'
+#   uri:
+#     url: https://gogs-labs-infra.{{ route_subdomain }}/user/sign_up
+#     method: POST
+#     body: "user_name={{ gogs_admin_user }}&password={{ gogs_admin_password }}&&retype={{ gogs_admin_password }}&&email={{ gogs_admin_user }}@gogs.com"
+#     headers:
+#       Content-Type: "application/x-www-form-urlencoded"
+#     status_code: 302,200
 
 # - name: Add user to Gogs
 #   uri:
