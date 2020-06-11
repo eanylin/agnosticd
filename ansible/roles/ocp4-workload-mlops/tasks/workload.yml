@@ -94,6 +94,19 @@
 - name: Install mlflow
   include_tasks: install-mlflow.yaml
   
+- name: Duplicate resources
+  include_tasks: dup_aws_credentials.yaml
+  loop:
+    - secrets
+    - configmap
+  vars:
+    namespaces:
+      - staging
+      - prod
+      - labs-infra
+  loop_control:
+    loop_var: kind
+ 
 - name: install ODH
   include_tasks: install-odh.yaml
 
