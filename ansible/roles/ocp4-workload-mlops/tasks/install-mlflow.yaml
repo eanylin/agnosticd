@@ -2,6 +2,14 @@
 - name: Add mlflow repo
   command: helm repo add ltsai https://tsailiming.github.io/helm-charts/
 
-- name: Install mlflow 
-  command: helm install mlflow ltsai/mlflow -n {{item}}-dev  
+- name: Check whether helm installed
+  command: helm list -n {{item}}-dev --filter mlflow --deployed
   loop: "{{users}}"
+  register: results
+
+- name: Install mlflow 
+  command: helm install mlflow ltsai/mlflow -n {{item.item}}-dev  
+  when: "'deployed' not in item.stdout"
+  loop: "{{ results.results }}"
+  loop_control:
+    label: "{{item.item}}"
