@@ -66,6 +66,15 @@
     msg: OCS 4 requires a min of 3 workers 
   when: nodes.resources | length < 3
 
+- name: Check if helm is installed
+  shell: helm version >/dev/null 2>&1
+  register: is_helm_exist
+  ignore_errors: yes
+
+- fail:
+    msg: helm is not installed
+  when: is_helm_exist.rc != 0
+
 - name: Configure OpenShift Container Storage 4
   include_role: 
     name: ocp4-workload-ceph
