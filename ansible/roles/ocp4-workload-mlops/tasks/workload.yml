@@ -33,9 +33,6 @@
 #     - ./files/coolstore-monolith-binary-build-template.yaml
 #     - ./files/coolstore-monolith-pipeline-build-template.yaml
 #     - ./files/jaeger-all-in-one-template.yml
-
-- name: Install gogs
-  include_tasks: install-gogs.yaml
   
 # - name: import sso74-image-stream to openshift namespace
 #   command: oc create -n openshift -f -
@@ -91,6 +88,12 @@
           openshift.io/description: ""
           openshift.io/display-name: "Lab Infrastructure"
 
+- name: Install gogs
+  include_tasks: install-gogs.yaml
+
+- name: Install mlflow
+  include_tasks: install-mlflow.yaml
+  
 - name: install ODH
   include_tasks: install-odh.yaml
 

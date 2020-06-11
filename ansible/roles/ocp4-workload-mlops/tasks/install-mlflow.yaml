@@ -1,0 +1,7 @@
+---
+- name: Add mlflow repo
+  command: helm repo add ltsai https://tsailiming.github.io/helm-charts/
+
+- name: Install mlflow 
+  command: helm install mlflow ltsai/mlflow -n {{item}}-dev  
+  loop: "{{users}}"
