@@ -16,10 +16,16 @@ module_titles:
   - { name: m3, title: "Control Cloud Native Apps with Service Mesh", path: /workshop/cloudnative/lab/workshop-environment }
   - { name: m4, title: "Advanced Cloud-Native with Event-Driven Serverless", path: /workshop/cloudnative/lab/workshop-environment }
 
-gogs_admin_user: admin
+guid: 1002
+gogs_admin_user: opentlc-mgr
 gogs_admin_password: 'r3dh4t1!'
 gogs_pwd: 'r3dh4t1!'
+tmp_dir: /tmp/{{ guid }}
 
+repositories:
+  - base: https://github.com/tsailiming/
+    name: datascience-examples
+  
 workshop_openshift_user_name: userXX
 workshop_openshift_user_password: 'r3dh4t1!'
 workshop_che_user_name: userXX
