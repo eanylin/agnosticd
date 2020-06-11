@@ -91,6 +91,12 @@
 - name: Install gogs
   include_tasks: install-gogs.yaml
 
+- name: Add gogs users 
+  include_tasks: add-gogs-users.yaml
+  loop: "{{users}}"
+  loop_control:
+    loop_var: user
+
 - name: Install mlflow
   include_tasks: install-mlflow.yaml
   
