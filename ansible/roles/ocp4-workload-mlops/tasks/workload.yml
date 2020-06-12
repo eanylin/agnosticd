@@ -200,24 +200,24 @@
 #   when: ("m4" in modules) and (r_amq_sub.resources | list | length == 0)
 #   include_tasks: install-amqstreams.yaml
 
-# # setup pipelines
-# - name: Look for pipelines subscription
-#   when: ("m4" in modules)
-#   k8s_facts:
-#     api_version: operators.coreos.com/v1alpha1
-#     kind: Subscription
-#     name: openshift-pipelines-operator
-#     namespace: openshift-operators
-#   register: r_pipelines_sub
+# setup pipelines
+- name: Look for pipelines subscription
+  #when: ("m4" in modules)
+  k8s_facts:
+    api_version: operators.coreos.com/v1alpha1
+    kind: Subscription
+    name: openshift-pipelines-operator
+    namespace: openshift-operators
+  register: r_pipelines_sub
 
-# - name: show existing pipelines sub
-#   when: ("m4" in modules)
-#   debug:
-#     msg: "existing pipelines sub: {{ r_pipelines_sub }}"
+- name: show existing pipelines sub
+  #when: ("m4" in modules)
+  debug:
+    msg: "existing pipelines sub: {{ r_pipelines_sub }}"
 
-# - name: Create OpenShift Objects for OpenShift Pipelines (tekton)
-#   when: ("m4" in modules) and (r_pipelines_sub.resources | list | length == 0)
-#   include_tasks: install-pipelines.yaml
+- name: Create OpenShift Objects for OpenShift Pipelines (tekton)
+  #when: ("m4" in modules) and (r_pipelines_sub.resources | list | length == 0)
+  include_tasks: install-pipelines.yaml
 
 # - name: install guides
 #   include_tasks: install-guides.yaml
