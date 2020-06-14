@@ -93,7 +93,7 @@
 
 - name: Remove any existing old .git config
   file:
-    path: "/tmp/{{ guid }}"
+    path: "{{ tmp_dir }}"
     state: absent
 
 # Leave this as the last task in the playbook.
