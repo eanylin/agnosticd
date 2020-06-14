@@ -12,6 +12,7 @@ guid: 1002
 gogs_admin_user: opentlc-mgr
 gogs_admin_password: 'r3dh4t1!'
 gogs_pwd: 'r3dh4t1!'
+lab_title: 'OpenShift AI/ML Workshop'
 tmp_dir: /tmp/{{ guid }}
 
 repositories:

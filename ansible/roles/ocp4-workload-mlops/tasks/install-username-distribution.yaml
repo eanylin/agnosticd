@@ -41,7 +41,7 @@
 
 - name: construct url argument for username distribution
   set_fact:
-    guides_urls: "{{ guides_urls + ['http://guides-' + item.name + '-labs-infra.' + route_subdomain + item.path + '?userid=%USERNAME%;' + item.title ] if (item.name in modules) else guides_urls }}"
+    guides_urls: "{{ guides_urls + ['http://guides-' + item.name + '-labs-infra.' + route_subdomain + item.path + '?userid=%USERNAME%;' + item.title ] }}"
   loop: "{{ module_titles }}"
 
 
@@ -51,7 +51,7 @@
     oc -n labs-infra new-app quay.io/openshiftlabs/username-distribution --name=get-a-username
     -e LAB_REDIS_HOST=redis
     -e LAB_REDIS_PASS=redis
-    -e LAB_TITLE={{ 'Containers & Cloud Native Roadshow' | quote }}
+    -e LAB_TITLE={{ lab_title }}
     -e LAB_DURATION_HOURS=8h
     -e LAB_USER_COUNT={{ num_users }}
     -e LAB_USER_ACCESS_TOKEN={{ workshop_openshift_user_password }}
