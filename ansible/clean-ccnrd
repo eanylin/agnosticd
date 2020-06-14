@@ -1,0 +1,19 @@
+#!/bin/bash
+
+OCP_USERNAME="opentlc-mgr"
+WORKLOAD=ocp4-workload-ccnrd
+USER_COUNT=5
+PASSWORD=r3dh4t1!
+
+oc get subscriptions -n openshift-operators -o name | xargs oc delete -n openshift-operators
+
+oc get csv -n openshift-operators -o name | xargs oc delete -n openshift-operators
+
+ansible-playbook -i localhost, -c local ./configs/ocp-workloads/ocp-workload.yml \
+    -e "ansible_python_interpreter=`which python`" \
+    -e"ACTION=remove" \
+    -e"ocp_username=${OCP_USERNAME}" \
+    -e"ocp_workload=${WORKLOAD}" \
+    -e"silent=False" \
+    -e"num_users=${USER_COUNT}" 
+
