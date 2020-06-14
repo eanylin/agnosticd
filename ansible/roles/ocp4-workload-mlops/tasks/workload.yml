@@ -17,14 +17,6 @@
   shell: |
          oc adm policy add-cluster-role-to-user cluster-admin {{ ocp_username }}
 
-# - name: create module list
-#   set_fact:
-#     modules: "{{ module_type.split(',') | map('trim') | list }}"
-
-# - name: Selected Modules
-#   debug:
-#     msg: "selected modules list: {{ modules }}"
-
 # - name: deploy templates to openshift namespace
 #   command: oc replace --force -n openshift -f -
 #   args:
@@ -51,30 +43,6 @@
     name: "{{ item[0] }}-{{ item[1] }}"
     user: "{{ item[0] }}"
   loop: "{{ users|product(['dev', 'staging', 'prod'])|list }}"
-
-# - name: create bookinfo user projects
-#   when: ("m3" in modules)
-#   include_tasks: create_project.yaml
-#   vars:
-#     name: "{{ item[0] }}-{{ item[1] }}"
-#     user: "{{ item[0] }}"
-#   loop: "{{ users|product(['bookinfo'])|list }}"
-
-# - name: create cloudnativeapps user projects
-#   when: ("m4" in modules)
-#   include_tasks: create_project.yaml
-#   vars:
-#     name: "{{ item[0] }}-{{ item[1] }}"
-#     user: "{{ item[0] }}"
-#   loop: "{{ users|product(['cloudnativeapps'])|list }}"
-
-# - name: create pipelines user projects
-#   when: ("m4" in modules)
-#   include_tasks: create_project.yaml
-#   vars:
-#     name: "{{ item[0] }}-{{ item[1] }}"
-#     user: "{{ item[0] }}"
-#   loop: "{{ users|product(['cloudnative-pipeline'])|list }}"
 
 - name: create labs-infra project
   k8s:
@@ -222,7 +190,7 @@
 # - name: install guides
 #   include_tasks: install-guides.yaml
 #   vars:
-#     guide: "{{ item }}"
+#     guide: "{{ item.name }}"
 #   loop: "{{ modules }}"
 
 # - name: install username distribution
