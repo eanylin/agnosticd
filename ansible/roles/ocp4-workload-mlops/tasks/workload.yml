@@ -9,9 +9,9 @@
   debug:
     msg: "Setting up num_users for workshop num_users = {{ num_users }}"
 
-- name: Setting up module_type for workshop
-  debug:
-    msg: "Setting up module_type for workshop module_type = {{ module_type }}"
+#- name: Setting up module_type for workshop
+#  debug:
+#    msg: "Setting up module_type for workshop module_type = {{ module_type }}"
 
 - name: Give access to opentlc-mgr
   shell: |
