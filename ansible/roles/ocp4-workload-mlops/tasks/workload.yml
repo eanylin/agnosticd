@@ -9,9 +9,9 @@
   debug:
     msg: "Setting up num_users for workshop num_users = {{ num_users }}"
 
-- name: Setting up module_type for workshop
-  debug:
-    msg: "Setting up module_type for workshop module_type = {{ module_type }}"
+#- name: Setting up module_type for workshop
+#  debug:
+#    msg: "Setting up module_type for workshop module_type = {{ module_type }}"
 
 - name: Give access to opentlc-mgr
   shell: |
@@ -187,11 +187,11 @@
   #when: ("m4" in modules) and (r_pipelines_sub.resources | list | length == 0)
   include_tasks: install-pipelines.yaml
 
-# - name: install guides
-#   include_tasks: install-guides.yaml
-#   vars:
-#     guide: "{{ item.name }}"
-#   loop: "{{ module_titles }}"
+- name: install guides
+  include_tasks: install-guides.yaml
+  vars:
+    guide: "{{ item.name }}"
+  loop: "{{ module_titles }}"
 
 # - name: install username distribution
 #   include_tasks: install-username-distribution.yaml

@@ -18,6 +18,7 @@ repositories:
   - base: https://github.com/tsailiming/
     name: datascience-examples
   
+workshopper_image: 'quay.io/openshiftlabs/workshopper:1.0'
 workshop_openshift_user_name: userXX
 workshop_openshift_user_password: 'r3dh4t1!'
 workshop_che_user_name: userXX
