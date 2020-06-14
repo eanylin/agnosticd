@@ -91,6 +91,11 @@
     - ./files/grafana_catalogsource.yaml
     - ./files/prom_catalogsource.yaml
 
+- name: Remove any existing old .git config
+  file:
+    path: "/tmp/{{ guid }}"
+    state: absent
+
 # Leave this as the last task in the playbook.
 - name: pre_workload tasks complete
   debug:
