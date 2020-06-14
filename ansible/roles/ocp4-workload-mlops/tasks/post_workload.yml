@@ -4,7 +4,7 @@
   debug:
     msg:
     - "user.info: "
-    - "user.info: CCN Roadshow Dev Track provisioned for {{ num_users }} user(s)"
+    - "user.info: Provisioned for {{ num_users }} user(s)"
 
 # - name: output workshop info guides
 #   debug:
