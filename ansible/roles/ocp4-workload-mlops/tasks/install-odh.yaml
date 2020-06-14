@@ -121,4 +121,4 @@
               operator: DoesNotExists        
             - key: seldon-app
               operator: Exists
-  loop: "{{ users|product(['dev', 'staging', 'prod'])|list }}"
+  loop: "{{ users|product(user_namespaces)|list }}"

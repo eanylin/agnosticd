@@ -42,7 +42,7 @@
   vars:
     name: "{{ item[0] }}-{{ item[1] }}"
     user: "{{ item[0] }}"
-  loop: "{{ users|product(['dev', 'staging', 'prod'])|list }}"
+  loop: "{{ users|product(user_namespaces)|list }}"
 
 - name: create labs-infra project
   k8s:
@@ -74,8 +74,8 @@
     - secrets
     - configmap
   vars:
-    namespaces:
-      - staging
+    namespaces: 
+      - stage
       - prod
       - labs-infra
   loop_control:
