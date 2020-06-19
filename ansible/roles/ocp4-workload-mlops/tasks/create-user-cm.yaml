@@ -1,0 +1,13 @@
+---
+- name: Create configmap for user:{{user}} ns:{{ns}}
+  k8s:
+    state: present
+    definition: 
+      kind: ConfigMap
+      apiVersion: v1
+      metadata:
+        namespace: "{% if ns!='labs-infra' %}{{user}}-{{ns}}{% else %}{{ns}}{% endif %}"
+        name: "{% if ns!='labs-infra' %}mlflow-cm{% else %}{{user}}-mlflow-cm{% endif %}"
+      data:
+        MLFLOW_S3_ENDPOINT_URL: "http://s3.openshift-storage.svc"
+        MLFLOW_TRACKING_URI: "https://mlflow-{{user}}-dev.{{ route_subdomain }}"

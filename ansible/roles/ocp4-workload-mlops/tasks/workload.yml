@@ -68,7 +68,7 @@
 - name: Install mlflow
   include_tasks: install-mlflow.yaml
   
-- name: Duplicate resources
+- name: Duplicate mlflow resources
   include_tasks: dup_aws_credentials.yaml
   loop:
     - secrets
@@ -81,6 +81,13 @@
   loop_control:
     loop_var: kind
  
+- name: Create user mlflow configmap
+  include_tasks: create-user-cm.yaml
+  vars:
+    user: "{{ item[0] }}"
+    ns: "{{ item[1] }}"    
+  loop: "{{ users|product(['stage', 'labs-infra'])|list }}"
+  
 - name: install ODH
   include_tasks: install-odh.yaml
 
