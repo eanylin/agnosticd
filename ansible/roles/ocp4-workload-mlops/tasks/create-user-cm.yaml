@@ -9,6 +9,7 @@
         namespace: "{% if ns!='labs-infra' %}{{user}}-{{ns}}{% else %}{{ns}}{% endif %}"
         name: "{% if ns!='labs-infra' %}mlflow-cm{% else %}{{user}}-mlflow-cm{% endif %}"
       data:
-        MLFLOW_S3_ENDPOINT_URL: "https://s3-openshift-storage.{{route_subdomain}}" #"http://s3.openshift-storage.svc"
+        MLFLOW_S3_ENDPOINT_URL: "https://s3-openshift-storage.{{route_subdomain}}"
         MLFLOW_TRACKING_URI: "https://mlflow-{{user}}-dev.{{ route_subdomain }}"
         S3_ENDPOINT_URL: "https://s3-openshift-storage.{{route_subdomain}}"
+        GOGS_URL: "https://gogs-labs-infra.{{ route_subdomain }}"
