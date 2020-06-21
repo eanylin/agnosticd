@@ -12,4 +12,4 @@
         MLFLOW_S3_ENDPOINT_URL: "https://s3-openshift-storage.{{route_subdomain}}"
         MLFLOW_TRACKING_URI: "https://mlflow-{{user}}-dev.{{ route_subdomain }}"
         S3_ENDPOINT_URL: "https://s3-openshift-storage.{{route_subdomain}}"
-        GOGS_URL: "https://gogs-labs-infra.{{ route_subdomain }}"
+        DATA_REPO: "https://gogs-labs-infra.{{ route_subdomain }}/{{user}}/creditcard"
