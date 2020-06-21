@@ -87,9 +87,12 @@
     user: "{{ item[0] }}"
     ns: "{{ item[1] }}"    
   loop: "{{ users|product(['stage', 'labs-infra'])|list }}"
-  
-- name: install ODH
-  include_tasks: install-odh.yaml
+
+- name: install global operators
+  include_tasks: install-global-operators.yaml
+
+- name: install monitoring
+  include_tasks: install-mon.yaml
 
 # Search for rhamt
 # - name: Search for RHAMT
@@ -176,20 +179,20 @@
 #   include_tasks: install-amqstreams.yaml
 
 # setup pipelines
-- name: Look for pipelines subscription
-  k8s_facts:
-    api_version: operators.coreos.com/v1alpha1
-    kind: Subscription
-    name: openshift-pipelines-operator
-    namespace: openshift-operators
-  register: r_pipelines_sub
+# - name: Look for pipelines subscription
+#   k8s_facts:
+#     api_version: operators.coreos.com/v1alpha1
+#     kind: Subscription
+#     name: openshift-pipelines-operator
+#     namespace: openshift-operators
+#   register: r_pipelines_sub
 
-- name: show existing pipelines sub
-  debug:
-    msg: "existing pipelines sub: {{ r_pipelines_sub }}"
+# - name: show existing pipelines sub
+#   debug:
+#     msg: "existing pipelines sub: {{ r_pipelines_sub }}"
 
-- name: Create OpenShift Objects for OpenShift Pipelines (tekton)
-  include_tasks: install-pipelines.yaml
+# - name: Create OpenShift Objects for OpenShift Pipelines (tekton)
+#   include_tasks: install-pipelines.yaml
 
 - name: install guides
   include_tasks: install-guides.yaml

@@ -16,12 +16,12 @@
     - labs-grafana
     - labs-prometheus
 
-- name: Create operator subscription for ODH
-  k8s:
-    state: present
-    definition: "{{ lookup('file', item ) | from_yaml }}"
-  loop:
-    - ./files/odh_subscription.yaml
+# - name: Create operator subscription for ODH
+#   k8s:
+#     state: present
+#     definition: "{{ lookup('file', item ) | from_yaml }}"
+#   loop:
+#     - ./files/odh_subscription.yaml
 
 - name: "Wait for ODH operator to be Succeeded"
   k8s_facts:
@@ -62,6 +62,17 @@
     namespace: labs-prometheus
   register: result
   until: result | json_query("resources[0].status.phase=='Succeeded'")
+  retries: 40
+  delay: 10
+
+- name: "Wait for prometheus operator group to appear"
+  k8s_facts:
+    api_version: operators.coreos.com/v1
+    kind: OperatorGroup
+    name: opendatahub
+    namespace: labs-prometheus
+  register: result
+  until: result | json_query("resources[0].status.namespaces") | length == 1
   retries: 40
   delay: 10
 
