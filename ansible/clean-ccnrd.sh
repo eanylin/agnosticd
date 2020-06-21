@@ -28,6 +28,8 @@ oc get subscriptions -n openshift-operators -o name | xargs oc delete -n openshi
 
 oc get csv -n openshift-operators -o name | xargs oc delete -n openshift-operators
 
+oc get crd -o name | grep tekton.dev | xargs oc delete
+
 ansible-playbook -i localhost, -c local ./configs/ocp-workloads/ocp-workload.yml \
     -e "ansible_python_interpreter=`which python`" \
     -e"ACTION=remove" \
