@@ -1,5 +1,5 @@
 ---
-- name: Create configmap for user:{{user}} ns:{{ns}}
+- name: Create configmap for {{user}} in {{ns}}
   k8s:
     state: present
     definition: 
