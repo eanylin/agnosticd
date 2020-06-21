@@ -201,6 +201,12 @@
 # - name: Create OpenShift Objects for OpenShift Pipelines (tekton)
 #   include_tasks: install-pipelines.yaml
 
+- name: create user pipeline
+  include_tasks: install-pipelines.yaml
+  loop: "{{users}}"
+  loop_control:
+    loop_var: user
+
 - name: install guides
   include_tasks: install-guides.yaml
   vars:
