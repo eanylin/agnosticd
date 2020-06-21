@@ -65,7 +65,15 @@
   retries: 40
   delay: 10
 
-- name: "Wait for prometheus operator group to appear"
+- name: Get prometheus operator group info
+  k8s_facts:
+    api_version: operators.coreos.com/v1
+    kind: OperatorGroup
+    name: opendatahub
+    namespace: labs-prometheus
+  register: check_namespace
+  
+- name: Wait for prometheus operator group to appear
   k8s_facts:
     api_version: operators.coreos.com/v1
     kind: OperatorGroup
@@ -73,6 +81,7 @@
     namespace: labs-prometheus
   register: result
   until: result | json_query("resources[0].status.namespaces") | length == 1
+  when: not (check_namespace | json_query("resources[0].spec.selector")) # Allows reentrant
   retries: 40
   delay: 10
 
