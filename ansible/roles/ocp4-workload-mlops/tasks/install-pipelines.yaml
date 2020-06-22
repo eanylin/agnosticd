@@ -1,4 +1,24 @@
 ---
+- name: Get all pipeline runs
+  k8s_facts:
+    api_version: tekton.dev/v1alpha1
+    kind: PipelineRun
+    namespace: "{{user}}-stage"
+    label_selectors:
+      tekton.dev/pipeline = pipeline
+  register: result
+
+- name: Delete pipeline runs
+  k8s:
+    api_version: tekton.dev/v1alpha1
+    kind: PipelineRun
+    namespace: "{{user}}-stage"
+    state: absent
+    name: "{{item.metadata.name}}"
+  loop: "{{result.resources}}"
+  loop_control:
+    label: "{{item.metadata.name}}"
+
 # Wipe out to ensure a clean one is loaded
 - name: Delete tekton staging pipeline for {{user}} in {{user}}-stage
   k8s:
@@ -11,6 +31,18 @@
     state: present
     namespace: "{{user}}-stage"
     definition: "{{ lookup('template', 'stage-pipeline.yaml.j2') | from_yaml_all | list }}"
+
+- name: Delete tekton staging pipeline for {{user}} in {{user}}-stage
+  k8s:
+    state: absent
+    namespace: "{{user}}-stage"
+    definition: "{{ lookup('template', 'tektontriggers.yaml.j2') | from_yaml_all | list }}"
+
+- name: Create tekton trigger for {{user}} in {{user}}-stage
+  k8s:
+    state: present
+    namespace: "{{user}}-stage"
+    definition: "{{ lookup('template', 'tektontriggers.yaml.j2') | from_yaml_all | list }}"
 
 # - name: Delete tekton prod pipeline for {{user}} in {{user}}-stage
 #   k8s:

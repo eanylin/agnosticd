@@ -35,3 +35,21 @@
   args:
     chdir: "{{ tmp_dir }}/{{ repository.name }}"
   when: repo_result.status != 200    
+
+- name: Configure web hook
+  uri:
+    url: https://gogs-labs-infra.{{ route_subdomain }}/api/v1/repos/{{ user }}/{{ repository.name }}/hooks
+    user: {{user}}
+    password: {{gogs_pwd}}
+    method: POST
+    body: 
+      type: gogs
+      config:
+        url: http://el-pipeline.{{user}}-stage.svc.cluster.local:8080
+        content_type: json
+      events:
+      - push
+      active: true
+    force_basic_auth: yes
+    status_code: 201
+    body_format: json
