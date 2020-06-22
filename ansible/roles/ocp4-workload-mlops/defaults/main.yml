@@ -15,6 +15,7 @@ gogs_pwd: 'r3dh4t1!'
 lab_title: 'OpenShift AI/ML Workshop'
 tmp_dir: /tmp/{{ guid }}
 
+# Only support 1 repository in the list
 repositories:
   - base: https://github.com/tsailiming/
     name: datascience-examples

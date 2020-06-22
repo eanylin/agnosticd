@@ -36,11 +36,33 @@
     chdir: "{{ tmp_dir }}/{{ repository.name }}"
   when: repo_result.status != 200    
 
+- name: Get web hooks
+  uri:
+    #https://gogs-labs-infra.apps.cluster-e730.e730.sandbox1691.opentlc.com/
+    url: https://gogs-labs-infra.{{ route_subdomain }}/api/v1/repos/{{user}}/datascience-examples/hooks 
+    user: "{{user}}"
+    password: "{{gogs_pwd}}"
+    force_basic_auth: true
+    body_format: json
+  register: webhook
+
+- name:  Delete web hooks
+  uri:
+    url: https://gogs-labs-infra.{{ route_subdomain }}/api/v1/repos/{{user}}/datascience-examples/hooks/{{item.id}}
+    user: "{{user}}"
+    password: "{{gogs_pwd}}"
+    force_basic_auth: true
+    method: delete
+    status_code: 204
+  loop: "{{webhook.json}}"
+  loop_control:
+    label: "{{item.id}}"
+
 - name: Configure web hook
   uri:
     url: https://gogs-labs-infra.{{ route_subdomain }}/api/v1/repos/{{ user }}/{{ repository.name }}/hooks
-    user: {{user}}
-    password: {{gogs_pwd}}
+    user: "{{user}}"
+    password: "{{gogs_pwd}}"
     method: POST
     body: 
       type: gogs
