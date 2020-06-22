@@ -34,3 +34,9 @@ user_namespaces:
   - dev
   - stage
   - prod
+
+# These binaries should exists on the ansible node
+binaries:
+  - helm
+  - oc
+  - gdown
