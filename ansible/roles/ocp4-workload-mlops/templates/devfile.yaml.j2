@@ -32,7 +32,7 @@ components:
             name: python-tools
           spec:
             containers:
-            - image: registry.redhat.io/codeready-workspaces/stacks-python-rhel8@sha256:2058a74f04a03b125e40006496c1a363ea34dd354cfceaa0f5a3faae934e4ecb
+            - image: image-registry.openshift-image-registry.svc:5000/labs-infra/s2i-minimal-notebook:3.6
               name: seldon
               ports:
               - containerPort: 5000
