@@ -23,17 +23,6 @@
 #   loop:
 #     - ./files/odh_subscription.yaml
 
-- name: "Wait for ODH operator to be Succeeded"
-  k8s_facts:
-    api_version: operators.coreos.com/v1alpha1
-    kind: ClusterServiceVersion
-    name: opendatahub-operator.v0.6.1
-    namespace: openshift-operators
-  register: result
-  until: result | json_query("resources[0].status.phase=='Succeeded'")
-  retries: 40
-  delay: 10
-
 - name: Create prometheus instance
   k8s:
     state: present    
@@ -44,15 +33,10 @@
     state: present    
     definition: "{{ lookup('file', './files/grafana_kfdef.yaml' ) | from_yaml }}"
 
-- name: Create seldon instance
-  k8s:
-    state: present    
-    definition: "{{ lookup('file', './files/seldon_kfdef.yaml' ) | from_yaml }}"
-
-- name: Create jupterhub instance
-  k8s:
-    state: present    
-    definition: "{{ lookup('file', './files/jupyterhub_kfdef.yaml' ) | from_yaml }}"
+# - name: Create seldon instance
+#   k8s:
+#     state: present    
+#     definition: "{{ lookup('file', './files/seldon_kfdef.yaml' ) | from_yaml }}"
 
 - name: "Wait for prometheus operator to be Succeeded"
   k8s_facts:

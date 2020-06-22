@@ -101,6 +101,9 @@
 - name: install monitoring
   include_tasks: install-mon.yaml
 
+- name: install jupyterhub
+  include_tasks: install-jupyterhub.yaml
+
 # Search for rhamt
 # - name: Search for RHAMT
 #   when: ("m1" in modules)

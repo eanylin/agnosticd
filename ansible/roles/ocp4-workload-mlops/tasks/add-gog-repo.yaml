@@ -1,5 +1,5 @@
 ---
-- name: Check if repository {{ repository.name }} exists in git for user {{ user }}
+- name: Check if repository {{ repository.name }} exists in git for {{ user }}
   uri:
     url: https://gogs-labs-infra.{{ route_subdomain }}/api/v1/repos/{{ user }}/{{ repository.name }}
     user: "{{ user }}"
@@ -8,7 +8,7 @@
     status_code: 200,404
   register: repo_result
 
-- name: Create git repository {{ repository.name }} for user "{{ user }}"
+- name: Create git repository {{ repository.name }} for {{ user }}
   uri:
     url: https://gogs-labs-infra.{{ route_subdomain }}/api/v1/user/repos
     method: POST
@@ -26,7 +26,7 @@
     dest: "{{ tmp_dir }}/{{ repository.name }}"
     force: true
 
-- name: Push {{ repository.name }} to git repository in Gogs for user "{{ user }}"
+- name: Push {{ repository.name }} to git repository in Gogs for {{ user }}
   shell: |
     git remote add {{ user }} https://{{ user }}:{{ gogs_pwd }}@gogs-labs-infra.{{ route_subdomain }}/{{ user }}/{{ repository.name }}.git
     git config --local user.email "{{ user }}@example.com"
