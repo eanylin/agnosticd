@@ -6,21 +6,44 @@ silent: False
 num_users: 10
 
 module_titles:
+  - { name: m1, title: "Kubernetes Overview", path: /workshop/mlops/lab/kubernetes-overview }
+  - { name: m1, title: "Navigating OpenShift Web Console", path: /workshop/mlops/lab/navigating-openshift-ui }
+  - { name: m1, title: "Getting Started with ML Ops", path: /workshop/mlops/lab/getting-started-mlops }
+  - { name: m1, title: "Your Workshop Environment", path: /workshop/mlops/lab/workshop-environment }
+  - { name: m1, title: "Exploring Data", path: /workshop/mlops/lab/exploring-data }
+  - { name: m1, title: "Build the First Model", path: /workshop/mlops/lab/building-the-first-model }
   - { name: m1, title: "Exploring OpenShift", path: /workshop/mlops/lab/exploring-openshift }
  
 guid: 1002
 gogs_admin_user: opentlc-mgr
 gogs_admin_password: 'r3dh4t1!'
 gogs_pwd: 'r3dh4t1!'
+lab_title: 'OpenShift AI/ML Workshop'
 tmp_dir: /tmp/{{ guid }}
 
+# Only support 1 repository in the list
 repositories:
   - base: https://github.com/tsailiming/
     name: datascience-examples
-  
+
+data_repo_name: creditcard
+# This belongs to ltsai(@)#r e d h a t#c o m
+data_gdrive_id: 1YsQFxzi2hjjmOgw5DdX0rETHIRh1LYvo
+
+workshopper_image: 'quay.io/openshiftlabs/workshopper:1.0'
 workshop_openshift_user_name: userXX
 workshop_openshift_user_password: 'r3dh4t1!'
 workshop_che_user_name: userXX
 workshop_che_user_password: 'r3dh4t1!'
 #workshop_rhamt_user_password: 'r3dh4t1!'
 
+user_namespaces:
+  - dev
+  - stage
+  - prod
+
+# These binaries should exists on the ansible node
+binaries:
+  - helm
+  - oc
+  - gdown
