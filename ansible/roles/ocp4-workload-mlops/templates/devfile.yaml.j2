@@ -1,0 +1,70 @@
+metadata:
+  name: {{user}}-test1234
+projects:
+  - name: {{repositories[0].name}}
+    source:
+      location: http://{{user}}:{{gogs_pwd}}@gogs-labs-infra.{{ route_subdomain }}/{{user}}/{{repositories[0].name}}
+      type: git
+      branch: master
+components:
+  - id: ms-python/python/latest
+    memoryLimit: 1Gi
+    type: chePlugin
+  - mountSources: true
+    referenceContent: |
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: python-tools
+        labels:
+          app: python-tools        
+      spec:
+        replicas: 1
+        selector:
+          matchLabels:
+            app: python-tools
+        template:
+          metadata:
+            name: python-tools
+          spec:
+            containers:
+            - image: image-registry.openshift-image-registry.svc:5000/labs-infra/s2i-minimal-notebook:3.6
+              name: seldon
+              ports:
+              - containerPort: 5000
+                name: http-server
+              volumeMounts:
+              - mountPath: /projects
+                name: projects
+              command:
+                - tail
+              args:
+                - -f
+                - /dev/null
+              env:
+                - name: MLFLOW_EXPERIMENT_NAME
+                  value: Dev
+              envFrom:
+              - secretRef:
+                  name: {{user}}-mlflow-obc
+              - configMapRef:
+                  name: {{user}}-mlflow-obc
+              - configMapRef:
+                  name: {{user}}-mlflow-cm
+            volumes:
+            - name: projects
+              persistentVolumeClaim:
+                claimName: projects
+    type: openshift
+    reference: python.yaml
+    alias: python-tools
+apiVersion: 1.0.0
+commands:
+  - name: Login to OpenShift
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}'
+        type: exec
+        command: >-
+          oc login https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_SERVICE_PORT
+          --insecure-skip-tls-verify=true
+        component: python-tools

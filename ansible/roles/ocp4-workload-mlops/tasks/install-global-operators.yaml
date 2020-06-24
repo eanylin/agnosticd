@@ -1,0 +1,25 @@
+---
+# Setup Seldon via operator
+- name: Create OpenShift Objects for pipelines
+  k8s:
+    state: present
+    merge_type:
+    - strategic-merge
+    - merge
+    definition: "{{ lookup('file', item ) | from_yaml }}"
+  loop:
+    - ./files/pipelines_subscription.yaml
+    - ./files/odh_subscription.yaml
+    - ./files/seldon_subscription.yaml
+
+- name: "Wait for ODH operator to be Succeeded"
+  k8s_facts:
+    api_version: operators.coreos.com/v1alpha1
+    kind: ClusterServiceVersion
+    name: opendatahub-operator.v0.6.1
+    namespace: openshift-operators
+  register: result
+  until: result | json_query("resources[0].status.phase=='Succeeded'")
+  retries: 40
+  delay: 10
+    

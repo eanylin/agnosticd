@@ -1,0 +1,76 @@
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: pipeline
+spec:
+  params:
+  - name: gitref
+  - name: gitrevision
+  - name: gitrepositoryurl
+  - name: contenttype
+  resourcetemplates:
+  - apiVersion: tekton.dev/v1beta1
+    kind: PipelineRun
+    metadata:
+      generateName: pipeline-run-
+    spec:
+      workspaces:
+        - name: workspace 
+          persistentVolumeClaim:
+            claimName: pipeline-pvc
+      resources:
+        - name: source
+          resourceSpec:
+            type: git
+            params:
+              - name: revision
+                value: $(params.gitrevision)
+              - name: url
+                value:  https://{{ user }}:{{ gogs_pwd }}@gogs-labs-infra.{{ route_subdomain }}/{{ user }}/{{ repositories[0].name }}.git
+      serviceAccountName: pipeline
+      pipelineRef:
+        name: pipeline
+      params:
+      - name: gitref
+        value: $(params.gitref)
+      - name: gitrevision
+        value: $(params.gitrevision)
+      - name: gitrepositoryurl
+        value: $(params.gitrepositoryurl)
+      - name: contenttype
+        value: $(params.contenttype)
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: pipeline
+spec:
+  serviceAccountName: pipeline
+  triggers:
+  - template:
+      name: pipeline
+    bindings:
+      - name: pipeline
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: pipeline
+spec:
+  params:
+  - name: gitref
+    value: $(body.ref)
+  - name: gitrevision
+    value: $(body.commits[0].id)
+  - name: gitrepositoryurl
+    value: $(body.repository.clone_url)
+  - name: contenttype
+    value: $(header.Content-Type)
+
+
+
+
+
+
+

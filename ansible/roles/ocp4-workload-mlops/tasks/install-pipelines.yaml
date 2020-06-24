@@ -1,12 +1,57 @@
 ---
-# Setup OpenShift Pipelines via operator
-- name: Create OpenShift Objects for pipelines
+- name: Get all pipeline runs
+  k8s_facts:
+    api_version: tekton.dev/v1alpha1
+    kind: PipelineRun
+    namespace: "{{user}}-stage"
+    label_selectors:
+      tekton.dev/pipeline = pipeline
+  register: result
+
+- name: Delete pipeline runs
+  k8s:
+    api_version: tekton.dev/v1alpha1
+    kind: PipelineRun
+    namespace: "{{user}}-stage"
+    state: absent
+    name: "{{item.metadata.name}}"
+  loop: "{{result.resources}}"
+  loop_control:
+    label: "{{item.metadata.name}}"
+
+# Wipe out to ensure a clean one is loaded
+- name: Delete tekton staging pipeline for {{user}} in {{user}}-stage
+  k8s:
+    state: absent
+    namespace: "{{user}}-stage"
+    definition: "{{ lookup('template', 'stage-pipeline.yaml.j2') | from_yaml_all | list }}"
+
+- name: Create tekton staging pipeline for {{user}} in {{user}}-stage
   k8s:
     state: present
-    merge_type:
-    - strategic-merge
-    - merge
-    definition: "{{ lookup('file', item ) | from_yaml }}"
-  loop:
-  - ./files/pipelines_subscription.yaml
+    namespace: "{{user}}-stage"
+    definition: "{{ lookup('template', 'stage-pipeline.yaml.j2') | from_yaml_all | list }}"
 
+- name: Delete tekton staging pipeline for {{user}} in {{user}}-stage
+  k8s:
+    state: absent
+    namespace: "{{user}}-stage"
+    definition: "{{ lookup('template', 'tektontriggers.yaml.j2') | from_yaml_all | list }}"
+
+- name: Create tekton trigger for {{user}} in {{user}}-stage
+  k8s:
+    state: present
+    namespace: "{{user}}-stage"
+    definition: "{{ lookup('template', 'tektontriggers.yaml.j2') | from_yaml_all | list }}"
+
+# - name: Delete tekton prod pipeline for {{user}} in {{user}}-stage
+#   k8s:
+#     state: absent
+#     namespace: "{{user}}-prod"
+#     definition: "{{ lookup('template', 'stage-pipeline.yaml.j2') | from_yaml_all | list }}"
+
+# - name: Create tekton prod pipeline for {{user}} in {{user}}-stage
+#   k8s:
+#     state: present
+#     namespace: "{{user}}-prod"
+#     definition: "{{ lookup('template', 'prod-pipeline.yaml.j2') | from_yaml_all | list}}"

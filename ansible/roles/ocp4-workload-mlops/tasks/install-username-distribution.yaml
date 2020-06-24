@@ -6,6 +6,25 @@
     namespace: labs-infra
   register: r_gau_dc
 
+- name: make sure related objects are deleted
+  when: r_gau_dc.resources | list | length == 0
+  k8s:
+    state: absent
+    definition:
+      apiVersion: "{{item.apiVersion}}"
+      kind: "{{item.kind}}"
+      metadata:
+        name: "{{item.name}}"
+        namespace: labs-infra
+  loop:
+    - {'apiVersion': 'apps.openshift.io/v1', 'kind': 'DeploymentConfig', 'name': 'redis'}
+    - {'apiVersion': 'v1', 'kind': 'Service', 'name': 'redis'}
+    - {'apiVersion': 'v1', 'kind': 'PersistentVolumeClaim', 'name': 'redis'}
+    - {'apiVersion': 'v1', 'kind': 'Secret', 'name': 'redis'}
+    - {'apiVersion': 'v1', 'kind': 'Service', 'name': 'get-a-username'}
+    - {'apiVersion': 'image.openshift.io/v1', 'kind': 'ImageStream', 'name': 'get-a-username'}
+    - {'apiVersion': 'route.openshift.io/v1', 'kind': 'Route', 'name': 'get-a-username'}
+
 - name: deploy redis
   when: r_gau_dc.resources | list | length == 0
   shell: >
@@ -41,7 +60,7 @@
 
 - name: construct url argument for username distribution
   set_fact:
-    guides_urls: "{{ guides_urls + ['http://guides-' + item.name + '-labs-infra.' + route_subdomain + item.path + '?userid=%USERNAME%;' + item.title ] if (item.name in modules) else guides_urls }}"
+    guides_urls: "{{ guides_urls + ['http://guides-' + item.name + '-labs-infra.' + route_subdomain + item.path + '?userid=%USERNAME%;' + item.title ] }}"
   loop: "{{ module_titles }}"
 
 
@@ -51,7 +70,7 @@
     oc -n labs-infra new-app quay.io/openshiftlabs/username-distribution --name=get-a-username
     -e LAB_REDIS_HOST=redis
     -e LAB_REDIS_PASS=redis
-    -e LAB_TITLE={{ 'Containers & Cloud Native Roadshow' | quote }}
+    -e LAB_TITLE={{ lab_title | quote }}
     -e LAB_DURATION_HOURS=8h
     -e LAB_USER_COUNT={{ num_users }}
     -e LAB_USER_ACCESS_TOKEN={{ workshop_openshift_user_password }}

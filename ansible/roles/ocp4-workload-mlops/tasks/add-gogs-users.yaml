@@ -29,6 +29,5 @@
 
 - name: Add repo
   include_tasks: add-gog-repo.yaml
-  loop: "{{ repositories }}"
-  loop_control:
-    loop_var: repository
+  vars:
+    repository: "{{ repositories | first }}"

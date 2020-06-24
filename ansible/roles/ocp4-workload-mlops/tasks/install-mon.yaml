@@ -16,23 +16,12 @@
     - labs-grafana
     - labs-prometheus
 
-- name: Create operator subscription for ODH
-  k8s:
-    state: present
-    definition: "{{ lookup('file', item ) | from_yaml }}"
-  loop:
-    - ./files/odh_subscription.yaml
-
-- name: "Wait for ODH operator to be Succeeded"
-  k8s_facts:
-    api_version: operators.coreos.com/v1alpha1
-    kind: ClusterServiceVersion
-    name: opendatahub-operator.v0.6.1
-    namespace: openshift-operators
-  register: result
-  until: result | json_query("resources[0].status.phase=='Succeeded'")
-  retries: 40
-  delay: 10
+# - name: Create operator subscription for ODH
+#   k8s:
+#     state: present
+#     definition: "{{ lookup('file', item ) | from_yaml }}"
+#   loop:
+#     - ./files/odh_subscription.yaml
 
 - name: Create prometheus instance
   k8s:
@@ -44,15 +33,10 @@
     state: present    
     definition: "{{ lookup('file', './files/grafana_kfdef.yaml' ) | from_yaml }}"
 
-- name: Create seldon instance
-  k8s:
-    state: present    
-    definition: "{{ lookup('file', './files/seldon_kfdef.yaml' ) | from_yaml }}"
-
-- name: Create jupterhub instance
-  k8s:
-    state: present    
-    definition: "{{ lookup('file', './files/jupyterhub_kfdef.yaml' ) | from_yaml }}"
+# - name: Create seldon instance
+#   k8s:
+#     state: present    
+#     definition: "{{ lookup('file', './files/seldon_kfdef.yaml' ) | from_yaml }}"
 
 - name: "Wait for prometheus operator to be Succeeded"
   k8s_facts:
@@ -62,6 +46,26 @@
     namespace: labs-prometheus
   register: result
   until: result | json_query("resources[0].status.phase=='Succeeded'")
+  retries: 40
+  delay: 10
+
+- name: Get prometheus operator group info
+  k8s_facts:
+    api_version: operators.coreos.com/v1
+    kind: OperatorGroup
+    name: opendatahub
+    namespace: labs-prometheus
+  register: check_namespace
+  
+- name: Wait for prometheus operator group to appear
+  k8s_facts:
+    api_version: operators.coreos.com/v1
+    kind: OperatorGroup
+    name: opendatahub
+    namespace: labs-prometheus
+  register: result
+  until: result | json_query("resources[0].status.namespaces") | length == 1
+  when: not (check_namespace | json_query("resources[0].spec.selector")) # Allows reentrant
   retries: 40
   delay: 10
 
@@ -121,4 +125,4 @@
               operator: DoesNotExists        
             - key: seldon-app
               operator: Exists
-  loop: "{{ users|product(['dev', 'staging', 'prod'])|list }}"
+  loop: "{{ users|product(user_namespaces)|list }}"

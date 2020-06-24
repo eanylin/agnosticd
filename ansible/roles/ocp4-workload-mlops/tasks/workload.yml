@@ -9,9 +9,9 @@
   debug:
     msg: "Setting up num_users for workshop num_users = {{ num_users }}"
 
-- name: Setting up module_type for workshop
-  debug:
-    msg: "Setting up module_type for workshop module_type = {{ module_type }}"
+#- name: Setting up module_type for workshop
+#  debug:
+#    msg: "Setting up module_type for workshop module_type = {{ module_type }}"
 
 - name: Give access to opentlc-mgr
   shell: |
@@ -42,7 +42,7 @@
   vars:
     name: "{{ item[0] }}-{{ item[1] }}"
     user: "{{ item[0] }}"
-  loop: "{{ users|product(['dev', 'staging', 'prod'])|list }}"
+  loop: "{{ users|product(user_namespaces)|list }}"
 
 - name: create labs-infra project
   k8s:
@@ -67,22 +67,42 @@
 
 - name: Install mlflow
   include_tasks: install-mlflow.yaml
-  
-- name: Duplicate resources
+
+# We wil resuse the s3 bucket from mlflow
+- name: Add data repo
+  include_tasks: setup-dvc.yaml
+  loop: "{{users}}"
+  loop_control:
+    loop_var: user
+
+- name: Duplicate mlflow resources
   include_tasks: dup_aws_credentials.yaml
   loop:
     - secrets
     - configmap
   vars:
-    namespaces:
-      - staging
+    namespaces: 
+      - stage
       - prod
       - labs-infra
   loop_control:
     loop_var: kind
  
-- name: install ODH
-  include_tasks: install-odh.yaml
+- name: Create user mlflow configmap
+  include_tasks: create-user-cm.yaml
+  vars:
+    user: "{{ item[0] }}"
+    ns: "{{ item[1] }}"    
+  loop: "{{ users|product(['dev', 'stage', 'labs-infra'])|list }}"
+
+- name: install global operators
+  include_tasks: install-global-operators.yaml
+
+- name: install monitoring
+  include_tasks: install-mon.yaml
+
+- name: install jupyterhub
+  include_tasks: install-jupyterhub.yaml
 
 # Search for rhamt
 # - name: Search for RHAMT
@@ -169,49 +189,52 @@
 #   include_tasks: install-amqstreams.yaml
 
 # setup pipelines
-- name: Look for pipelines subscription
-  #when: ("m4" in modules)
-  k8s_facts:
-    api_version: operators.coreos.com/v1alpha1
-    kind: Subscription
-    name: openshift-pipelines-operator
-    namespace: openshift-operators
-  register: r_pipelines_sub
+# - name: Look for pipelines subscription
+#   k8s_facts:
+#     api_version: operators.coreos.com/v1alpha1
+#     kind: Subscription
+#     name: openshift-pipelines-operator
+#     namespace: openshift-operators
+#   register: r_pipelines_sub
 
-- name: show existing pipelines sub
-  #when: ("m4" in modules)
-  debug:
-    msg: "existing pipelines sub: {{ r_pipelines_sub }}"
+# - name: show existing pipelines sub
+#   debug:
+#     msg: "existing pipelines sub: {{ r_pipelines_sub }}"
 
-- name: Create OpenShift Objects for OpenShift Pipelines (tekton)
-  #when: ("m4" in modules) and (r_pipelines_sub.resources | list | length == 0)
+# - name: Create OpenShift Objects for OpenShift Pipelines (tekton)
+#   include_tasks: install-pipelines.yaml
+
+- name: create user pipeline
   include_tasks: install-pipelines.yaml
+  loop: "{{users}}"
+  loop_control:
+    loop_var: user
 
-# - name: install guides
-#   include_tasks: install-guides.yaml
-#   vars:
-#     guide: "{{ item.name }}"
-#   loop: "{{ module_titles }}"
+- name: install guides
+  include_tasks: install-guides.yaml
+  vars:
+    guide: "{{ item.name }}"
+  loop: "{{ module_titles }}"
 
-# - name: install username distribution
-#   include_tasks: install-username-distribution.yaml
+- name: install username distribution
+  include_tasks: install-username-distribution.yaml
 
 # Install CodeReady Workspaces
-# - name: see if codeready is installed
-#   k8s_facts:
-#     api_version: org.eclipse.che/v1
-#     kind: CheCluster
-#     name: codeready-workspaces
-#     namespace: labs-infra
-#   register: r_codeready_cr
+- name: see if codeready is installed
+  k8s_facts:
+    api_version: org.eclipse.che/v1
+    kind: CheCluster
+    name: codeready-workspaces
+    namespace: labs-infra
+  register: r_codeready_cr
 
-# - name: show codeready cr
-#   debug:
-#     msg: "existing codeready project: {{ r_codeready_cr }}"
+- name: show codeready cr
+  debug:
+    msg: "existing codeready project: {{ r_codeready_cr }}"
 
-# - name: install codeready
-#   when: r_codeready_cr.resources | list | length == 0
-#   include_tasks: install-codeready.yaml
+- name: install codeready
+  when: r_codeready_cr.resources | list | length == 0
+  include_tasks: install-codeready.yaml
 
 # Leave this as the last task in the playbook.
 - name: workload tasks complete
