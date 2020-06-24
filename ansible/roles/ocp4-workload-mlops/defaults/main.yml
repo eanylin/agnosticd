@@ -25,9 +25,9 @@ tmp_dir: /tmp/{{ guid }}
 repositories:
   - base: https://github.com/tsailiming/
     name: datascience-examples
-
+  
 data_repo_name: creditcard
-# This belongs to ltsai(@)#r e d h a t#c o m
+# This belongs to ltsai(@)#r e d h a t#c o m 
 data_gdrive_id: 1YsQFxzi2hjjmOgw5DdX0rETHIRh1LYvo
 
 workshopper_image: 'quay.io/openshiftlabs/workshopper:1.0'
