@@ -60,7 +60,7 @@
 
 - name: construct url argument for username distribution
   set_fact:
-    guides_urls: "{{ guides_urls + ['http://guides-' + item.name + '-labs-infra.' + route_subdomain + item.path + '?userid=%USERNAME%;' + item.title ] }}"
+    guides_urls: "{{ guides_urls + ['https://guides-' + item.name + '-labs-infra.' + route_subdomain + item.path + '?userid=%USERNAME%;' + item.title ] }}"
   loop: "{{ module_titles }}"
 
 
@@ -94,11 +94,13 @@
         labels:
           app: get-a-username
       spec:
-        host: ''
         to:
           kind: Service
           name: get-a-username
           weight: 100
         port:
           targetPort: 8080-tcp
+        tls:
+          termination: edge
+          insecureEdgeTerminationPolicy: Redirect
   register: Route

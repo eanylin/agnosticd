@@ -37,12 +37,14 @@
         name: guides-{{ guide }}
         labels:
           app: guides-{{ guide }}
-      spec:
-        host: ''
+      spec:        
         to:
           kind: Service
           name: guides-{{ guide }}
           weight: 100
         port:
           targetPort: 8080-tcp
+        tls:
+          termination: edge
+          insecureEdgeTerminationPolicy: Redirect
   register: Route
