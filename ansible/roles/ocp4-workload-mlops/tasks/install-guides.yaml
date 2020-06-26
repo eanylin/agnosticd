@@ -13,14 +13,15 @@
     -e MASTER_URL={{ master_url }} \
     -e CONSOLE_URL={{ console_url }} \
     -e ECLIPSE_CHE_URL=https://codeready-labs-infra.{{ route_subdomain }} \
-    -e GIT_URL=http://gogs-labs-infra.{{ route_subdomain }} \
+    -e GIT_URL=https://gogs-labs-infra.{{ route_subdomain }} \
     -e ROUTE_SUBDOMAIN={{ route_subdomain }} \
     -e CHE_USER_PASSWORD={{ workshop_che_user_password }} \
     -e OPENSHIFT_USER_NAME={{ workshop_openshift_user_name }} \
     -e OPENSHIFT_USER_PASSWORD={{ workshop_openshift_user_password }} \
     -e LOG_TO_STDOUT=true \
     -e CONTENT_URL_PREFIX='https://raw.githubusercontent.com/eanylin/ocp-al-ml-workshop-{{ guide }}-guides/master' \
-    -e WORKSHOPS_URLS='https://raw.githubusercontent.com/eanylin/ocp-al-ml-workshop-{{guide}}-guides/master/_ocp-ai-ml-workshop.yml'
+    -e WORKSHOPS_URLS='https://raw.githubusercontent.com/eanylin/ocp-al-ml-workshop-{{guide}}-guides/master/_ocp-ai-ml-workshop.yml' \
+    -e JUPYTERHUB_URL=https://jupyterhub-labs-infra.{{ route_subdomain }} 
 #   -e KEYCLOAK_URL=https://keycloak-labs-infra.{{ route_subdomain }}
 #   -e CHE_USER_NAME={{ workshop_che_user_name }}
 #   -e RHAMT_URL=http://rhamt-web-console-labs-infra.{{ route_subdomain }}
