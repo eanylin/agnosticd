@@ -1,0 +1,30 @@
+---
+# After the gogs-filter has been deployed, it will be accessible at:
+# http://gogsfilter.labs-infra.svc.cluster.local:8080
+
+- name: create labs-infra project
+  k8s:
+    state: present
+    kind: Project
+    api_version: project.openshift.io/v1
+    definition:
+      metadata:
+        name: "labs-infra"
+        annotations:
+          openshift.io/description: ""
+          openshift.io/display-name: "Lab Infrastructure"
+
+- name: Remove gogs-filter if it exists
+  command: "oc delete all -l app=gogsfilter -n labs-infra"
+  ignore_errors: yes
+
+- name: Create gogs-filter deployment
+  command: >
+          {%raw%}oc new-app
+            --name=gogsfilter
+            -n labs-infra
+            --docker-image=quay.io/kwkoo/gogsfilter
+            --env=RULESJSON='[{"ref":"refs/heads/staging","target":"http://el-pipeline.{{ (index .commits 0).committer.username }}-stage.svc.cluster.local:8080"}]'{%endraw%}
+
+- name: Create service for gogs-filter
+  command: "oc expose dc/gogsfilter --port=8080 -n labs-infra"
