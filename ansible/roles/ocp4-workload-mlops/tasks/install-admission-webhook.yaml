@@ -1,0 +1,77 @@
+---
+- name: create labs-infra project
+  k8s:
+    state: present
+    kind: Project
+    api_version: project.openshift.io/v1
+    definition:
+      metadata:
+        name: "labs-infra"
+        annotations:
+          openshift.io/description: ""
+          openshift.io/display-name: "Lab Infrastructure"
+
+- name: Remove cluster role if it exists
+  command: "oc delete clusterrole pipelinerestrictor"
+  ignore_errors: yes
+
+- name: Create webhook cluster role
+  command: "oc create clusterrole pipelinerestrictor --verb=get,list,watch --resource=pipelineruns"
+
+- name: Bind webhook cluster role
+  command: "oc adm policy add-cluster-role-to-user pipelinerestrictor system:serviceaccount:labs-infra:default"
+
+- name: Assign api server extension permissions to user
+  command: "oc adm policy add-cluster-role-to-user system:auth-delegator system:serviceaccount:labs-infra:default"
+
+- name: Delete existing role binding if it exists
+  command: "oc delete rolebinding -n kube-system pipelinerestrictor"
+  ignore_errors: yes
+
+- name: Bind api server extension permissions to user
+  command: "oc create rolebinding -n kube-system pipelinerestrictor --role=extension-apiserver-authentication-reader --serviceaccount=labs-infra:default"
+
+- name: Allow webhook user to have permission to stop pipelineruns in projects
+  command: "oc policy add-role-to-user -n {{user}}-stage edit system:serviceaccount:labs-infra:default"
+  loop: "{{users}}"
+  loop_control:
+    loop_var: user
+
+- name: Delete existing webhook deployment if it exists
+  command: "oc delete all -l app=pipelinerestrictor -n labs-infra"
+  ignore_errors: yes
+
+- name: Create webhook deployment
+  command: "oc new-app -n labs-infra --docker-image=quay.io/kwkoo/pipelinerestrictor --name=pipelinerestrictor"
+
+- name: Set volume for certificates
+  command: "oc set volumes dc/pipelinerestrictor --add -t secret --secret-name=pipelinerestrictor -m /certificates -n labs-infra"
+
+- name: Create service
+  command: "oc expose dc/pipelinerestrictor --port=443 --target-port=8443 -n labs-infra"
+
+- name: Annotate service for certificate generation
+  command: "oc annotate svc/pipelinerestrictor -n labs-infra service.beta.openshift.io/serving-cert-secret-name=pipelinerestrictor"
+
+- name: Configure health and readiness probes
+  command: "oc set probe dc/pipelinerestrictor -n labs-infra --readiness --liveness --initial-delay-seconds=10 --get-url=https://:8443/healthz"
+
+- name: Wait until webhook is ready
+  k8s_info:
+    api_version: apps.openshift.io/v1
+    kind: DeploymentConfig
+    name: pipelinerestrictor
+    namespace: labs-infra
+  register: r_webhook_dc
+  retries: 50
+  delay: 10
+  until:
+    - r_webhook_dc.resources[0].status.readyReplicas is defined
+    - r_webhook_dc.resources[0].status.replicas is defined
+    - r_webhook_dc.resources[0].status.readyReplicas == r_webhook_dc.resources[0].status.replicas
+
+- name: Register API Extension
+  command: "oc apply -f {{role_path}}/files/admission_webhook_apiserver.yaml"
+
+- name: Register admission webhook
+  command: "oc apply -f {{role_path}}/files/admission_webhook_config.yaml"
