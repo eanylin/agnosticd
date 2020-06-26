@@ -12,7 +12,7 @@
     data_tmp_dir: "{{ tmp_dir }}/data"
 
 - set_fact:
-    download_file: "{{data_tmp_dir}}/creditcard.csv"
+    download_file: "{{data_tmp_dir}}/creditcard.tar.bz2"
 
 - name: Make temp directory
   file:
@@ -26,6 +26,13 @@
   
 - name: Download data set
   command: "gdown --id {{data_gdrive_id}} -O {{download_file}}"
+  when: not stat_result.stat.exists
+
+- name: Untar data set
+  unarchive:
+    src: "{{download_file}}"
+    dest: "{{data_tmp_dir}}"
+    remote_src: yes
   when: not stat_result.stat.exists
 
 - block:
@@ -81,7 +88,6 @@
         dvc init        
         dvc remote add -d myremote s3://{{ bucket_name }}/dvcf4g2
         dvc remote modify myremote endpointurl https://s3-openshift-storage.{{route_subdomain}}
-        #dvc remote default myremote        
         git commit -a -m "Initialize DVC"
 
         dvc add *.csv
@@ -92,7 +98,7 @@
         git push -f --all {{ user }}
         git push -f --tags {{ user }}
 
-        dvc push #-r myremote
+        dvc push 
       args:
         chdir: "{{data_tmp_dir}}"
       environment:
