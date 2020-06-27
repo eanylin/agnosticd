@@ -58,6 +58,7 @@
   loop_control:
     label: "{{item.id}}"
 
+# Using gogs-filter
 - name: Configure web hook
   uri:
     url: https://gogs-labs-infra.{{ route_subdomain }}/api/v1/repos/{{ user }}/{{ repository.name }}/hooks
@@ -67,7 +68,8 @@
     body: 
       type: gogs
       config:
-        url: http://el-pipeline.{{user}}-stage.svc.cluster.local:8080
+      # url: http://el-pipeline.{{user}}-stage.svc.cluster.local:8080
+        url: http://gogsfilter.labs-infra.svc.cluster.local:8080
         content_type: json
       events:
       - push

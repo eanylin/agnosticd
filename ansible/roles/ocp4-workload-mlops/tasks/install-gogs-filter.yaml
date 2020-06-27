@@ -2,18 +2,6 @@
 # After the gogs-filter has been deployed, it will be accessible at:
 # http://gogsfilter.labs-infra.svc.cluster.local:8080
 
-- name: create labs-infra project
-  k8s:
-    state: present
-    kind: Project
-    api_version: project.openshift.io/v1
-    definition:
-      metadata:
-        name: "labs-infra"
-        annotations:
-          openshift.io/description: ""
-          openshift.io/display-name: "Lab Infrastructure"
-
 - name: Remove gogs-filter if it exists
   command: "oc delete all -l app=gogsfilter -n labs-infra"
   ignore_errors: yes

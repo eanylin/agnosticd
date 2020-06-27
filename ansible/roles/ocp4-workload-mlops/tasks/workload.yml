@@ -37,7 +37,6 @@
 #      stdin: "{{ lookup('file', './files/ccn-sso74-template.yaml') }}"
 
 - name: Create projects
-  #when: ("m1" in modules or "m2" in modules or "m3" in modules)
   include_tasks: create_project.yaml
   vars:
     name: "{{ item[0] }}-{{ item[1] }}"
@@ -59,6 +58,12 @@
 - name: Install gogs
   include_tasks: install-gogs.yaml
 
+- name: Install gogs filter
+  include_tasks: install-gogs-filter.yaml
+
+# - name: Install gogs admission 
+#   include_task: install-admission-webhook.yaml
+
 - name: Add gogs users 
   include_tasks: add-gogs-users.yaml
   loop: "{{users}}"
@@ -75,7 +80,7 @@
   loop_control:
     loop_var: user
 
-- name: Duplicate mlflow resources
+- name: Duplicate aws credentials
   include_tasks: dup_aws_credentials.yaml
   loop:
     - secrets
@@ -103,6 +108,13 @@
 
 - name: install jupyterhub
   include_tasks: install-jupyterhub.yaml
+
+- name: install web notification
+  include_tasks: install-web-notifications.yaml
+  vars:
+    user: "{{ item[0] }}"
+    ns: "{{ item[0] }}-{{ item[1] }}"
+  loop: "{{ users|product(['prod', 'stage'])|list }}"
 
 # Search for rhamt
 # - name: Search for RHAMT
@@ -187,22 +199,6 @@
 # - name: Create OpenShift Objects for Kafka (amq streams)
 #   when: ("m4" in modules) and (r_amq_sub.resources | list | length == 0)
 #   include_tasks: install-amqstreams.yaml
-
-# setup pipelines
-# - name: Look for pipelines subscription
-#   k8s_facts:
-#     api_version: operators.coreos.com/v1alpha1
-#     kind: Subscription
-#     name: openshift-pipelines-operator
-#     namespace: openshift-operators
-#   register: r_pipelines_sub
-
-# - name: show existing pipelines sub
-#   debug:
-#     msg: "existing pipelines sub: {{ r_pipelines_sub }}"
-
-# - name: Create OpenShift Objects for OpenShift Pipelines (tekton)
-#   include_tasks: install-pipelines.yaml
 
 - name: create user pipeline
   include_tasks: install-pipelines.yaml

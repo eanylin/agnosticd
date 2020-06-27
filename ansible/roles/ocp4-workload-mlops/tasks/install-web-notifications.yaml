@@ -9,24 +9,12 @@
 # Or:
 # curl -XPUT -d 'Hello World' http://webnotifications.labs-infra.svc.cluster.local:8080/api/send
 
-- name: create labs-infra project
-  k8s:
-    state: present
-    kind: Project
-    api_version: project.openshift.io/v1
-    definition:
-      metadata:
-        name: "labs-infra"
-        annotations:
-          openshift.io/description: ""
-          openshift.io/display-name: "Lab Infrastructure"
-
 - name: Remove webnotifications if it exists
-  command: "oc delete all -l app=webnotifications -n labs-infra"
+  command: "oc delete all -l app=webnotifications -n {{ns}}"
   ignore_errors: yes
 
 - name: Create webnotifications deployment
-  command: "oc new-app --docker-image=quay.io/kwkoo/webnotifications --env=TZ=Asia/Singapore -n labs-infra"
+  command: "oc new-app --docker-image=quay.io/kwkoo/webnotifications --env=TZ=Asia/Singapore -n {{ns}}"
 
 - name: Create route for webnotifications
-  command: "oc expose svc/webnotifications -n labs-infra"
+  command: "oc expose svc/webnotifications -n {{ns}}"
