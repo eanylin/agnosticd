@@ -1,0 +1,56 @@
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: pipeline
+spec:
+  params:
+  - name: gitrevision
+  resourcetemplates:
+  - apiVersion: tekton.dev/v1beta1
+    kind: PipelineRun
+    metadata:
+      generateName: pipeline-run-
+    spec:     
+      serviceAccountName: pipeline
+      pipelineRef:
+        name: pipeline
+      workspaces:
+        - name: workspace 
+          persistentVolumeClaim:
+            claimName: prod-pipeline-pvc
+      params:
+      - name: gitrevision
+        value: $(params.gitrevision)
+      resources:
+        - name: source
+          resourceSpec:
+            type: git
+            params:
+              - name: revision
+                value: $(params.gitrevision)
+              - name: url
+                value:  https://{{ user }}:{{ gogs_pwd }}@gogs-labs-infra.{{ route_subdomain }}/{{ user }}/{{ repositories[0].name }}.git
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: pipeline
+spec:
+  serviceAccountName: pipeline
+  triggers:
+  - template:
+      name: pipeline
+    bindings:
+      - name: pipeline
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: pipeline
+spec:
+  params:
+  - name: gitrevision
+    value: $(body.tag)
+
+               

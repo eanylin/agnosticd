@@ -2,7 +2,7 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: pipeline-pvc
+  name: stage-pipeline-pvc
 spec:
   accessModes:
     - ReadWriteMany
@@ -94,9 +94,6 @@ spec:
   - script: |
       #!/bin/bash
 
-      #git config --global user.name "FIRST_NAME LAST_NAME"
-      #git config --global user.email "MY_NAME@example.com"
-
       /workspace/source/workshop/src/train/train.sh #/workspace/model/model.pkl
 
     image: registry.redhat.io/ubi8/python-36
@@ -144,11 +141,6 @@ spec:
     type: string
     default: image-registry.openshift-image-registry.svc:5000/{{user}}-stage/model
   steps:
-#  - name: testing-access
-#    image: registry.redhat.io/ubi8/ubi-minimal
-#    script: |
-#      #!/bin/bash
-#      ls -al /workspace/model/*
   - script: |
       #!/bin/bash
       s2i build $(params.PATH_CONTEXT) \
