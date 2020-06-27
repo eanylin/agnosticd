@@ -1,9 +1,9 @@
 metadata:
-  name: {{user}}-test1234
+  name: {{user}}-workspace
 projects:
-  - name: {{repositories[0].name}}
+  - name: "{{repositories[0].name}}"
     source:
-      location: http://{{user}}:{{gogs_pwd}}@gogs-labs-infra.{{ route_subdomain }}/{{user}}/{{repositories[0].name}}
+      location: "http://{{user}}:{{gogs_pwd}}@gogs-labs-infra.{{ route_subdomain }}/{{user}}/{{repositories[0].name}}"
       type: git
       branch: master
 components:
@@ -33,6 +33,8 @@ components:
               ports:
               - containerPort: 5000
                 name: http-server
+              - containerPort: 6000
+                name: metric
               volumeMounts:
               - mountPath: /projects
                 name: projects
