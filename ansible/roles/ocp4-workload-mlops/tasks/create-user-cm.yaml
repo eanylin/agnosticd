@@ -14,3 +14,5 @@
         S3_ENDPOINT_URL: "https://s3-openshift-storage.{{route_subdomain}}"
         DATA_REPO: "https://gogs-labs-infra.{{ route_subdomain }}/{{user}}/creditcard"
         WORKSHOP_USER_ID: "{{user}}"
+        SELDON_STAGE_URL: "https://seldon-{{USER}}-stage.{{route_subdomain}}"
+        SELDON_PROD_URL: "https://seldon-{{USER}}-prod.{{route_subdomain}}"
