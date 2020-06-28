@@ -1,5 +1,5 @@
 metadata:
-  name: {{user}}-workspace
+  name: "{{user}}-workspace"
 projects:
   - name: "{{repositories[0].name}}"
     source:
@@ -30,6 +30,11 @@ components:
             containers:
             - image: image-registry.openshift-image-registry.svc:5000/labs-infra/s2i-minimal-notebook:3.6
               name: seldon
+              resources:
+                limits:
+                  memory: 2Gi
+                requests:
+                  memory: 512Mi
               ports:
               - containerPort: 5000
                 name: http-server
