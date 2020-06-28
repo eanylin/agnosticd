@@ -93,7 +93,7 @@
         dvc add *.csv
         git add .gitignore *.dvc
 
-        git commit -a -m "new data from https://www.kaggle.com/mlg-ulb/creditcardfraud"
+        git commit -a -m "new data"
         git tag -a v1.0 -m "version 1.0"
         git push -f --all {{ user }}
         git push -f --tags {{ user }}
