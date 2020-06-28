@@ -33,11 +33,6 @@
     state: present    
     definition: "{{ lookup('file', './files/grafana_kfdef.yaml' ) | from_yaml }}"
 
-# - name: Create seldon instance
-#   k8s:
-#     state: present    
-#     definition: "{{ lookup('file', './files/seldon_kfdef.yaml' ) | from_yaml }}"
-
 - name: "Wait for prometheus operator to be Succeeded"
   k8s_facts:
     api_version: operators.coreos.com/v1alpha1
