@@ -36,7 +36,7 @@
 #   args:
 #      stdin: "{{ lookup('file', './files/ccn-sso74-template.yaml') }}"
 
-- name: Create projects
+- name: Create user projects
   include_tasks: create_project.yaml
   vars:
     name: "{{ item[0] }}-{{ item[1] }}"
@@ -57,6 +57,7 @@
   loop:
     - labs-infra
     - labs-kafka
+    - labs-argocd
 
 - name: Install gogs
   include_tasks: install-gogs.yaml
@@ -210,6 +211,7 @@
     ns: "{{ item[0] }}-{{ item[1] }}"    
     pipeline_j2: "{{item[1]}}-pipeline.yaml.j2"
     trigger_j2: "{{item[1]}}-tektontriggers.yaml.j2"
+    repository: "{{ repositories | first }}"
   loop: "{{ users|product(['stage', 'prod'])|list }}"
 
 - name: add pipeline view role from prod to staging
@@ -218,7 +220,10 @@
   loop: "{{users}}"
   loop_control:
     loop_var: user
-    
+
+- name: install argocd
+  include_tasks: install-argocd.yaml
+  
 - name: install guides
   include_tasks: install-guides.yaml
   vars:

@@ -21,10 +21,17 @@ gogs_pwd: 'r3dh4t1!'
 lab_title: 'OpenShift AI/ML Workshop'
 tmp_dir: /tmp/{{ guid }}
 
+user_deploy_repo_name: rh-mlops-model-deploy
+user_source_repo_name: datascience-examples #rh-mlops-workshop
+
 # Only support 1 repository in the list
 repositories:
   - base: https://github.com/tsailiming/
-    name: datascience-examples
+    name: "{{user_source_repo_name}}"
+    webhook: http://gogsfilter.labs-infra.svc.cluster.local:8080
+  - base: https://github.com/tsailiming/
+    name: "{{user_deploy_repo_name}}"
+    webhook: http://argocd-server.labs-argocd.svc.cluster.local:80/api/webhook #https://argocd-labs-argocd.{{route_subdomain}}/api/webhook
   
 data_repo_name: creditcard
 # This belongs to ltsai(@)#r e d h a t#c o m 

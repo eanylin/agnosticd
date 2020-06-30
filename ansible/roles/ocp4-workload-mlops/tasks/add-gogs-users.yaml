@@ -28,6 +28,8 @@
   when: result.json.data | length == 0
 
 - name: Add repo
-  include_tasks: add-gog-repo.yaml
-  vars:
-    repository: "{{ repositories | first }}"
+  include_tasks: add-gog-repo.yaml  
+  loop: "{{repositories}}"
+  loop_control:
+    loop_var: repository
+    label: "{{repository.name}}"

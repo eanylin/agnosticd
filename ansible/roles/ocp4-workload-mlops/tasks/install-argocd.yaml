@@ -1,0 +1,88 @@
+---
+- name: deploy argocd operator
+  k8s:
+    state: present
+    definition: "{{ lookup('file', item ) | from_yaml }}"
+  loop:
+  - ./files/argocd_operatorgroup.yaml
+  - ./files/argocd_subscription.yaml
+
+- name: "Wait for argocd operator to be Succeeded"
+  k8s_facts:
+    api_version: operators.coreos.com/v1alpha1
+    kind: ClusterServiceVersion
+    name: argocd-operator.v0.0.9
+    namespace: labs-argocd
+  register: result
+  until: result | json_query("resources[0].status.phase=='Succeeded'")
+  retries: 40
+  delay: 10
+
+- name: Create argocd repo passwords
+  k8s:
+    state: present
+    definition:    
+      kind: Secret
+      apiVersion: v1
+      metadata:
+        name: repo-{{user}}-deploy
+        namespace: labs-argocd
+      data:
+        password: "{{ gogs_pwd | b64encode }}"
+        username: "{{ user | b64encode }}"
+      type: Opaque
+  loop: "{{users}}"
+  loop_control:
+    loop_var: user
+
+- copy: 
+    content: "{{ lookup('template', './templates/argocd_cr.yaml.j2') }}"
+    dest: /tmp/argo.yaml
+
+- name: Create argocd 
+  k8s:
+    state: present
+    definition: "{{ lookup('template', './templates/argocd_cr.yaml.j2' ) | from_yaml }}"
+
+- name: Wait for argocd to be available
+  k8s_facts:
+    api_version: argoproj.io/v1alpha1
+    kind: ArgoCD
+    name: argocd
+    namespace: labs-argocd
+  register: result
+  until: result | json_query("resources[0].status.phase=='Available'")
+  retries: 40
+  delay: 10
+
+- name: Create argocd application
+  include_tasks: add-argocd-app.yaml
+  vars:
+    user: "{{ item[0] }}"
+    ns: "{{ item[0] }}-{{ item[1] }}"    
+    env: "{{item[1]}}"    
+  loop: "{{ users|product(['stage', 'prod'])|list }}"
+
+- name: Get existing groups
+  shell: |
+    oc get groups -o name
+  register: results
+
+- name: Create argocd groups
+  shell: |
+    oc adm groups new {{item}}
+  when: item not in results.stdout
+  loop:
+    - argocdadmins
+    - argocdusers
+  
+- name: Add {{ocp_username}} to argocdadmins
+  shell: |
+    oc adm groups add-users argocdadmins {{ocp_username}}
+
+- name: Add user to argocdusers
+  shell: |
+      oc adm groups add-users argocdusers {{user}}
+  loop: "{{users}}"
+  loop_control:
+    loop_var: user

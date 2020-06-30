@@ -38,8 +38,7 @@
 
 - name: Get web hooks
   uri:
-    #https://gogs-labs-infra.apps.cluster-e730.e730.sandbox1691.opentlc.com/
-    url: https://gogs-labs-infra.{{ route_subdomain }}/api/v1/repos/{{user}}/datascience-examples/hooks 
+    url: https://gogs-labs-infra.{{ route_subdomain }}/api/v1/repos/{{user}}/{{ repository.name }}/hooks 
     user: "{{user}}"
     password: "{{gogs_pwd}}"
     force_basic_auth: true
@@ -48,7 +47,7 @@
 
 - name:  Delete web hooks
   uri:
-    url: https://gogs-labs-infra.{{ route_subdomain }}/api/v1/repos/{{user}}/datascience-examples/hooks/{{item.id}}
+    url: https://gogs-labs-infra.{{ route_subdomain }}/api/v1/repos/{{user}}/{{ repository.name }}/hooks/{{item.id}}
     user: "{{user}}"
     password: "{{gogs_pwd}}"
     force_basic_auth: true
@@ -58,7 +57,6 @@
   loop_control:
     label: "{{item.id}}"
 
-# Using gogs-filter
 - name: Configure web hook
   uri:
     url: https://gogs-labs-infra.{{ route_subdomain }}/api/v1/repos/{{ user }}/{{ repository.name }}/hooks
@@ -68,8 +66,7 @@
     body: 
       type: gogs
       config:
-      # url: http://el-pipeline.{{user}}-stage.svc.cluster.local:8080
-        url: http://gogsfilter.labs-infra.svc.cluster.local:8080
+        url: "{{repository.webhook}}"
         content_type: json
       events:
       - push

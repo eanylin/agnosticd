@@ -27,7 +27,7 @@ spec:
               - name: revision
                 value: $(params.gitrevision)
               - name: url
-                value:  https://{{ user }}:{{ gogs_pwd }}@gogs-labs-infra.{{ route_subdomain }}/{{ user }}/{{ repositories[0].name }}.git
+                value:  https://{{ user }}:{{ gogs_pwd }}@gogs-labs-infra.{{ route_subdomain }}/{{ user }}/{{ repository.name }}.git
       serviceAccountName: pipeline
       pipelineRef:
         name: pipeline
