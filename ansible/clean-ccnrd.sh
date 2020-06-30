@@ -1,5 +1,6 @@
 #!/bin/bash
 
+unset GREP_OPTIONS
 OCP_USERNAME="opentlc-mgr"
 WORKLOAD=ocp4-workload-ccnrd
 USER_COUNT=5
@@ -8,7 +9,6 @@ PASSWORD=r3dh4t1!
 for ns in `oc get ns | grep user[0-9]-istio-system | awk '{print $1}'`;
 do
     oc delete -n $ns servicemeshcontrolplane.maistra.io/smcp 
-    sleep 1m
 done
 
 oc delete validatingwebhookconfiguration/openshift-operators.servicemesh-resources.maistra.io
