@@ -43,17 +43,20 @@
     user: "{{ item[0] }}"
   loop: "{{ users|product(user_namespaces)|list }}"
 
-- name: create labs-infra project
+- name: "Create {{ item }} Project"
   k8s:
     state: present
     kind: Project
     api_version: project.openshift.io/v1
     definition:
       metadata:
-        name: "labs-infra"
+        name: "{{item}}"
         annotations:
           openshift.io/description: ""
           openshift.io/display-name: "Lab Infrastructure"
+  loop:
+    - labs-infra
+    - labs-kafka
 
 - name: Install gogs
   include_tasks: install-gogs.yaml
@@ -241,6 +244,23 @@
 - name: install codeready
   when: r_codeready_cr.resources | list | length == 0
   include_tasks: install-codeready.yaml
+
+# Install AMQ Streams
+- name: Check if AMQ Streams is installed
+  k8s_facts:
+    api_version: kafka.strimzi.io/v1beta1
+    kind: Kafka
+    name: amq-streams
+    namespace: labs-kafka
+  register: r_amqstreams_cr
+
+- name: Show amqstreams cr
+  debug:
+    msg: "Existing amqstreams project: {{ r_amqstreams_cr }}"
+
+- name: Install AMQ Streams
+  when: r_amqstreams_cr.resources | list | length == 0
+  include_tasks: install-amq-streams.yaml
 
 # Leave this as the last task in the playbook.
 - name: workload tasks complete

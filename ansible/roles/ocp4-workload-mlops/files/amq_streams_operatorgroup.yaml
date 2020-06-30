@@ -1,0 +1,12 @@
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  generateName: labs-kafka-
+  annotations:
+    olm.providedAPIs: kafka.v1beta1.kafka.strimzi.io
+  name: labs-kafka-operator-group
+  namespace: labs-kafka
+spec:
+  targetNamespaces:
+    - labs-kafka
