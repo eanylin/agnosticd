@@ -54,8 +54,6 @@
         annotations:
           openshift.io/description: ""
           openshift.io/display-name: "Lab Infrastructure"
-        labels:
-          prometheus.io/scrape: "true"
   loop:
     - labs-infra
     - labs-kafka
