@@ -24,7 +24,6 @@ tmp_dir: /tmp/{{ guid }}
 user_deploy_repo_name: rh-mlops-model-deploy
 user_source_repo_name: datascience-examples #rh-mlops-workshop
 
-# Only support 1 repository in the list
 repositories:
   - base: https://github.com/tsailiming/
     name: "{{user_source_repo_name}}"
