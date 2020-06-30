@@ -85,7 +85,7 @@
   loop_control:
     label: "{'name': {{item.name}},'namespace': {{item.namespace}}}"
 
-- name: delete other projects project
+- name: delete other projects
   k8s:
     state: absent
     kind: Project
@@ -97,6 +97,8 @@
     - labs-grafana
     - labs-prometheus
     - labs-infra
+    - labs-argocd
+    - labs-kafka
 
   ignore_errors: yes
 
