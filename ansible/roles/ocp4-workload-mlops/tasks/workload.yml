@@ -43,7 +43,7 @@
     user: "{{ item[0] }}"
   loop: "{{ users|product(user_namespaces)|list }}"
 
-- name: "Create {{ item }} Project"
+- name: "Create Project"
   k8s:
     state: present
     kind: Project
