@@ -30,8 +30,8 @@ repositories:
     webhook: http://gogsfilter.labs-infra.svc.cluster.local:8080
   - base: https://github.com/tsailiming/
     name: "{{user_deploy_repo_name}}"
-    webhook: http://argocd-server.labs-argocd.svc.cluster.local:80/api/webhook #https://argocd-labs-argocd.{{route_subdomain}}/api/webhook
-  
+    webhook: http://argocd-server.labs-argocd.svc.cluster.local:80/api/webhook 
+    
 data_repo_name: creditcard
 # This belongs to ltsai(@)#r e d h a t#c o m 
 data_gdrive_id: 1EVtohwYSTaLu-0y7MmrqNt8R4Al8bQCH #1YsQFxzi2hjjmOgw5DdX0rETHIRh1LYvo

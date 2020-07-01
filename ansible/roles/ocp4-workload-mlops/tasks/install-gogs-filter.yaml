@@ -12,7 +12,7 @@
             --name=gogsfilter
             -n labs-infra
             --docker-image=quay.io/kwkoo/gogsfilter
-            --env=RULESJSON='[{"ref":"refs/heads/staging","target":"http://el-pipeline.{{ (index .commits 0).committer.username }}-stage.svc.cluster.local:8080"}]'{%endraw%}
+            --env=RULESJSON='[{"ref":"refs/heads/stage","target":"http://el-pipeline.{{ (index .commits 0).committer.username }}-stage.svc.cluster.local:8080"}]'{%endraw%}
 
 - name: Create service for gogs-filter
   command: "oc expose dc/gogsfilter --port=8080 -n labs-infra"

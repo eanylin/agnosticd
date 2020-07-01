@@ -16,3 +16,4 @@
         WORKSHOP_USER_ID: "{{user}}"
         SELDON_STAGE_URL: "https://seldon-{{user}}-stage.{{route_subdomain}}"
         SELDON_PROD_URL: "https://seldon-{{user}}-prod.{{route_subdomain}}"
+        SELDON_URL: "{% if ns=='stage' %}https://seldon-{{user}}-stage.{{route_subdomain}}{% elif ns=='prod' %}https://seldon-{{user}}-prod.{{route_subdomain}}{% endif %}"

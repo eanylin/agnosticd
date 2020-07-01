@@ -97,7 +97,7 @@
   loop_control:
     loop_var: kind
  
-- name: Create user mlflow configmap
+- name: Create user configmap
   include_tasks: create-user-cm.yaml
   vars:
     user: "{{ item[0] }}"
@@ -212,11 +212,11 @@
     pipeline_j2: "{{item[1]}}-pipeline.yaml.j2"
     trigger_j2: "{{item[1]}}-tektontriggers.yaml.j2"
     repository: "{{ repositories | first }}"
-  loop: "{{ users|product(['stage', 'prod'])|list }}"
+  loop: "{{ users|product(['stage'])|list }}"
 
-- name: add pipeline view role from prod to staging
+- name: add pipeline view role from staging to prod
   shell: |
-    oc adm policy add-role-to-user view system:serviceaccount:{{user}}-prod:pipeline -n {{user}}-stage
+    oc adm policy add-role-to-user edit system:serviceaccount:{{user}}-stage:pipeline -n {{user}}-prod
   loop: "{{users}}"
   loop_control:
     loop_var: user
