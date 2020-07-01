@@ -22,8 +22,11 @@
     -e CONTENT_URL_PREFIX='https://raw.githubusercontent.com/eanylin/ocp-al-ml-workshop-{{ guide }}-guides/master' \
     -e WORKSHOPS_URLS='https://raw.githubusercontent.com/eanylin/ocp-al-ml-workshop-{{guide}}-guides/master/_ocp-ai-ml-workshop.yml' \
     -e JUPYTERHUB_URL=https://jupyterhub-labs-infra.{{ route_subdomain }} \
-    -e GRAFANA_URL=https://grafana-route-labs-grafana.{{ route_subdomain }} 
-#   -e KEYCLOAK_URL=https://keycloak-labs-infra.{{ route_subdomain }}
+    -e GRAFANA_URL=https://grafana-route-labs-grafana.{{ route_subdomain }} \
+    -e USER_MODEL_REPO_NAME={{user_source_repo_name}} \
+    -e USER_DEPLOY_REPO_NAME={{user_deploy_repo_name}} \
+    -e ARGOCD_URL=https://argocd-server-labs-argocd.{{ route_subdomain }} \
+    -e KEYCLOAK_URL=https://keycloak-labs-infra.{{ route_subdomain }}
 #   -e CHE_USER_NAME={{ workshop_che_user_name }}
 #   -e RHAMT_URL=http://rhamt-web-console-labs-infra.{{ route_subdomain }}
 
