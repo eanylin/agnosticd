@@ -34,11 +34,7 @@
   loop: "{{users}}"
   loop_control:
     loop_var: user
-
-- copy: 
-    content: "{{ lookup('template', './templates/argocd_cr.yaml.j2') }}"
-    dest: /tmp/argo.yaml
-
+    
 - name: Create argocd 
   k8s:
     state: present
