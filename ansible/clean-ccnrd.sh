@@ -30,6 +30,8 @@ oc get csv -n openshift-operators -o name | xargs oc delete -n openshift-operato
 
 oc get crd -o name | grep tekton.dev | xargs oc delete
 
+oc get crd -o name | grep kafka | xargs oc delete
+
 ansible-playbook -i localhost, -c local ./configs/ocp-workloads/ocp-workload.yml \
     -e "ansible_python_interpreter=`which python`" \
     -e"ACTION=remove" \
