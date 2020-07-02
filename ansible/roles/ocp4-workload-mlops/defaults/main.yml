@@ -22,7 +22,7 @@ lab_title: 'OpenShift AI/ML Workshop'
 tmp_dir: /tmp/{{ guid }}
 
 user_deploy_repo_name: rh-mlops-model-deploy
-user_source_repo_name: datascience-examples #rh-mlops-workshop
+user_source_repo_name: rh-mlops-workshop
 
 repositories:
   - base: https://github.com/tsailiming/
