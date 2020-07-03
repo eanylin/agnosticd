@@ -72,23 +72,11 @@
   loop_control:
     loop_var: binary
 
-# - name: Check if helm is installed
-#   shell: helm version >/dev/null 2>&1
-#   register: is_helm_exist
-#   ignore_errors: yes
+- name: Add helm chart repo
+  command: helm repo add ltsai https://tsailiming.github.io/helm-charts/
 
-# - fail:
-#     msg: helm is not installed
-#   when: is_helm_exist.rc != 0
-
-# - name: Check if gdown is installed
-#   shell: gdown -V >/dev/null 2>&1
-#   register: is_gdown_exist
-#   ignore_errors: yes
-
-# - fail:
-#     msg: gdown is not installed
-#   when: is_gdown_exist.rc != 0
+- name: Update helm repo
+  command: helm repo update 
 
 - name: Configure OpenShift Container Storage 4
   include_role: 
