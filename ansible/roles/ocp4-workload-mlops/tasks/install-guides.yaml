@@ -26,7 +26,9 @@
     -e USER_MODEL_REPO_NAME={{user_source_repo_name}} \
     -e USER_DEPLOY_REPO_NAME={{user_deploy_repo_name}} \
     -e ARGOCD_URL=https://argocd-server-labs-argocd.{{ route_subdomain }} \
-    -e KEYCLOAK_URL=https://keycloak-labs-infra.{{ route_subdomain }}
+    -e NEXUS_URL=https://nexus-labs-nexus.{{ route_subdomain }} \
+    -e NEXUS_DOCKER_REGISTRY=nexus-docker-labs-nexus.{{ route_subdomain }} 
+ #   -e KEYCLOAK_URL=https://keycloak-labs-infra.{{ route_subdomain }} \    
 #   -e CHE_USER_NAME={{ workshop_che_user_name }}
 #   -e RHAMT_URL=http://rhamt-web-console-labs-infra.{{ route_subdomain }}
 
