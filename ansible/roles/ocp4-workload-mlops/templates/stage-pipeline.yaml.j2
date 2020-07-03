@@ -94,7 +94,7 @@ spec:
   - script: |
       #!/bin/bash
 
-      /workspace/source/workshop/src/train/train-stage.sh 
+      /workspace/source/src/train/train-stage.sh 
 
     image: registry.redhat.io/ubi8/python-36
     name: train
@@ -158,7 +158,7 @@ spec:
       #/bin/bash
       
       GIT_REV=`cat /workspace/git`
-      . /workspace/source/workshop/src/seldon/config.sh
+      . /workspace/source/src/seldon/config.sh
       IMAGE_URL=image-registry.openshift-image-registry.svc:5000/{{user}}-stage/$IMAGE_NAME:$GIT_REV
 
       buildah bud --tls-verify=$(params.TLSVERIFY) \
@@ -180,7 +180,7 @@ spec:
       #!/bin/bash
 
       GIT_REV=`cat /workspace/git`
-      . /workspace/source/workshop/src/seldon/config.sh
+      . /workspace/source/src/seldon/config.sh
       IMAGE_URL=image-registry.openshift-image-registry.svc:5000/{{user}}-stage/$IMAGE_NAME:$GIT_REV
 
       buildah push \
@@ -216,7 +216,7 @@ spec:
         #!/bin/bash
         
         GIT_REV=`cat /workspace/git`
-        . /workspace/source/workshop/src/seldon/config.sh
+        . /workspace/source/src/seldon/config.sh
 
         oc tag {{user}}-stage/$IMAGE_NAME:$GIT_REV {{user}}-prod/$IMAGE_NAME:$GIT_REV 
 ---
@@ -304,7 +304,7 @@ spec:
     - name: TLSVERIFY
       value: "false"
     - name: PATH_CONTEXT
-      value: /workspace/source/workshop/src/seldon
+      value: /workspace/source/src/seldon
     runAfter:
     - train
     taskRef:
