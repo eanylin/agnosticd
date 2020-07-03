@@ -17,3 +17,4 @@
         SELDON_STAGE_URL: "https://seldon-{{user}}-stage.{{route_subdomain}}"
         SELDON_PROD_URL: "https://seldon-{{user}}-prod.{{route_subdomain}}"
         SELDON_URL: "{% if ns=='stage' %}https://seldon-{{user}}-stage.{{route_subdomain}}{% elif ns=='prod' %}https://seldon-{{user}}-prod.{{route_subdomain}}{% endif %}"
+        NEXUS_DOCKER_REGISTRY: "https://nexus-docker-labs-nexus.{{ route_subdomain }}"

@@ -7,16 +7,47 @@
   command: helm install nexus ltsai/nexus -n labs-nexus
   when: "'deployed' not in result.stdout"
 
-# - name: Create nexus registry secret
-#   command: | 
-#     oc create secret docker-registry nexus \
-#     --docker-server=https://docker-registry-labs-nexus.apps.cluster-c1af.c1af.sandbox1817.opentlc.com \
-#     --docker-username=admin \
-#     --docker-password=admin123 \
-#     --docker-email=nobody@example.com
+- name: Create docker registry service
+  k8s:
+    definition:
+      kind: Service
+      apiVersion: v1
+      metadata:
+        name: nexus-docker
+        namespace: labs-nexus
+      spec:
+        ports:
+          - protocol: TCP
+            port: 5000
+            targetPort: 5000
+            name: docker
+        selector:
+          app: sonatype-nexus
+        type: ClusterIP
 
-# - name: Associate nexus registry with service account
-#   command: oc secrets link {{item}} nexus
-#   loop:
-#     - builder
-#     - pipeline
+- name: Create docker route
+  k8s:
+    definition:
+      apiVersion: route.openshift.io/v1
+      kind: Route
+      metadata:
+        name: nexus-docker
+        namespace: labs-nexus
+      spec:
+        port:
+          targetPort: 5000
+        tls:
+          insecureEdgeTerminationPolicy: Redirect
+          termination: edge
+        to:
+          kind: Service
+          name: nexus-docker          
+          weight: 100
+        wildcardPolicy: None
+
+- name: Add nexus docker secrets
+  include_tasks: add_nexus_secrets.yaml
+  vars:
+    user: "{{ item[0] }}"
+    ns: "{{ item[0] }}-{{ item[1] }}"
+  loop: "{{ users|product(['prod', 'stage'])|list }}"
