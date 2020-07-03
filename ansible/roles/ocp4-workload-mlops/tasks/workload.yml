@@ -58,7 +58,11 @@
     - labs-infra
     - labs-kafka
     - labs-argocd
+    - labs-nexus
 
+- name: Install nexus
+  include_tasks: install-nexus.yaml
+  
 - name: Install gogs
   include_tasks: install-gogs.yaml
 

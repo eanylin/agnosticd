@@ -1,0 +1,22 @@
+---
+- name: Check whether nexus is installed
+  command: helm list -n labs-nexus --filter nexus --deployed
+  register: result
+
+- name: Install nexus 
+  command: helm install nexus ltsai/nexus -n labs-nexus
+  when: "'deployed' not in result.stdout"
+
+# - name: Create nexus registry secret
+#   command: | 
+#     oc create secret docker-registry nexus \
+#     --docker-server=https://docker-registry-labs-nexus.apps.cluster-c1af.c1af.sandbox1817.opentlc.com \
+#     --docker-username=admin \
+#     --docker-password=admin123 \
+#     --docker-email=nobody@example.com
+
+# - name: Associate nexus registry with service account
+#   command: oc secrets link {{item}} nexus
+#   loop:
+#     - builder
+#     - pipeline
