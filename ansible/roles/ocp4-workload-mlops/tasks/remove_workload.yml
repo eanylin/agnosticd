@@ -99,7 +99,8 @@
     - labs-infra
     - labs-argocd
     - labs-kafka
-
+    - labs-nexus
+    
   ignore_errors: yes
 
 - name: delete template
