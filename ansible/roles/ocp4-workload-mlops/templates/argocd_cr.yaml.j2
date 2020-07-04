@@ -7,7 +7,14 @@ metadata:
 spec:
   server:
     insecure: true
-    route: true
+    route:
+      annotations: {}
+      enabled: true
+      path: /
+      TLS:
+        insecureEdgeTerminationPolicy: Redirect
+        termination: edge
+      wildcardPolicy: None
 
   dex:
     image: quay.io/ablock/dex
