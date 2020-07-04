@@ -60,9 +60,6 @@
     - labs-argocd
     - labs-nexus
 
-- name: Install nexus
-  include_tasks: install-nexus.yaml
-  
 - name: Install gogs
   include_tasks: install-gogs.yaml
 
@@ -224,6 +221,9 @@
   loop: "{{users}}"
   loop_control:
     loop_var: user
+
+- name: Install nexus
+  include_tasks: install-nexus.yaml
 
 - name: install argocd
   include_tasks: install-argocd.yaml
