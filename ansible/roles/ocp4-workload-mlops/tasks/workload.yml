@@ -222,6 +222,7 @@
   loop_control:
     loop_var: user
 
+# Must be after pipeline
 - name: Install nexus
   include_tasks: install-nexus.yaml
 
