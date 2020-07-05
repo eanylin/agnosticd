@@ -144,29 +144,6 @@
 #     namespace: openshift-operators
 #   register: r_jaeger_sub
 
-# - name: Create Jaeger
-#   when: ("m2" in modules or "m3" in modules) and (r_jaeger_sub.resources | list | length == 0)
-#   include_tasks: install-jaeger.yaml
-
-# - name: Look for service mesh subscription
-#   when: ("m3" in modules or "m4" in modules)
-#   k8s_facts:
-#     api_version: operators.coreos.com/v1alpha1
-#     kind: Subscription
-#     name: servicemeshoperator
-#     namespace: openshift-operators
-#   register: r_sm_sub
-
-# - name: show existing service mesh cr
-#   when: ("m3" in modules or "m4" in modules)
-#   debug:
-#     msg: "existing service mesh sub: {{ r_sm_sub }}"
-
-# Setup OpenShift Service Mesh via operator
-# - name: Create OpenShift Objects for Service Mesh
-#   when: ("m3" in modules or "m4" in modules) and (r_sm_sub.resources | list | length == 0)
-#   include_tasks: install-servicemesh.yaml
-
 # Setup OpenShift Serverless via operator
 # - name: Look for serverless subscription
 #   when: ("m4" in modules)
@@ -185,25 +162,6 @@
 # - name: Create OpenShift Objects for Serverless (knative)
 #   when: ("m4" in modules) and (r_serverless_sub.resources | list | length == 0)
 #   include_tasks: install-serverless.yaml
-
-# # Setup AMQ via operator
-# - name: Look for amq subscription
-#   when: ("m4" in modules)
-#   k8s_facts:
-#     api_version: operators.coreos.com/v1alpha1
-#     kind: Subscription
-#     name: amq-streams
-#     namespace: openshift-operators
-#   register: r_amq_sub
-
-# - name: show existing amq sub
-#   when: ("m4" in modules)
-#   debug:
-#     msg: "existing amq sub: {{ r_amq_sub }}"
-
-# - name: Create OpenShift Objects for Kafka (amq streams)
-#   when: ("m4" in modules) and (r_amq_sub.resources | list | length == 0)
-#   include_tasks: install-amqstreams.yaml
 
 - name: create user pipeline
   include_tasks: install-pipelines.yaml
