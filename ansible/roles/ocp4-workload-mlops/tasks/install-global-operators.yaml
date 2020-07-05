@@ -1,6 +1,5 @@
 ---
-# Setup Seldon via operator
-- name: Create OpenShift Objects for pipelines
+- name: Create global operators
   k8s:
     state: present
     merge_type:

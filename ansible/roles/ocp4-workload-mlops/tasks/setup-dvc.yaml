@@ -47,7 +47,7 @@
         status_code: 200,201
         force_basic_auth: true
       
-    - name: Remove .git config
+    - name: Remove .git config for user {{ user }}
       file:
         path: "{{data_tmp_dir}}/{{item}}"
         state: absent
@@ -55,7 +55,7 @@
         - .git
         - .dvc
         
-    - name: Get AWS credentials
+    - name: Get AWS credentials for user {{ user }}
       k8s_info:
         api_version: v1
         kind: Secret
@@ -67,7 +67,7 @@
         aws_access_key: "{{ result.resources[0].data['AWS_ACCESS_KEY_ID'] | b64decode }}"
         aws_secret_key: "{{ result.resources[0].data['AWS_SECRET_ACCESS_KEY'] | b64decode }}"
 
-    - name: Get bucket name
+    - name: Get bucket name for user {{ user }}
       k8s_info:
         api_version: v1
         kind: ConfigMap
@@ -78,7 +78,7 @@
     - set_fact:
         bucket_name: "{{ result.resources[0].data['BUCKET_NAME'] }}"
 
-    - name: Create repository and push
+    - name: Create repository and push for user {{ user }}
       shell: |
         git init
         git remote add {{ user }} https://{{ user }}:{{ gogs_pwd }}@gogs-labs-infra.{{ route_subdomain }}/{{ user }}/{{ data_repo_name }}.git
