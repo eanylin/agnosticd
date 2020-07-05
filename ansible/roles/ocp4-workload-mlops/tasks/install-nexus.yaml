@@ -50,4 +50,4 @@
   vars:
     user: "{{ item[0] }}"
     ns: "{{ item[0] }}-{{ item[1] }}"
-  loop: "{{ users|product(['prod', 'stage'])|list }}"
+  loop: "{{ users|product(['dev', 'prod', 'stage'])|list }}"
