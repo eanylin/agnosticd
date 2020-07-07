@@ -13,7 +13,7 @@
   k8s_facts:
     kind: ClusterServiceVersion
     api_version: operators.coreos.com/v1alpha1
-    name: "ocs-operator.v{{ocs_version}}.0"
+    name: "ocs-operator.v{{ocs_version}}"
     namespace: "{{ ceph_namespace }}"
   register: storagecluster
   until: storagecluster | json_query("resources[0].status.phase=='Succeeded'")
