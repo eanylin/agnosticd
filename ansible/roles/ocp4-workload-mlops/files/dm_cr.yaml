@@ -1,0 +1,11 @@
+---
+apiVersion: app.kiegroup.org/v2
+kind: KieApp
+metadata:
+  name: dm
+  namespace: labs-dm
+spec:
+  environment: rhdm-authoring
+  commonConfig:
+    adminUser: admin
+    adminPassword: password
