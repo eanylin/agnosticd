@@ -9,32 +9,9 @@
   debug:
     msg: "Setting up num_users for workshop num_users = {{ num_users }}"
 
-#- name: Setting up module_type for workshop
-#  debug:
-#    msg: "Setting up module_type for workshop module_type = {{ module_type }}"
-
 - name: Give access to opentlc-mgr
   shell: |
          oc adm policy add-cluster-role-to-user cluster-admin {{ ocp_username }}
-
-# - name: deploy templates to openshift namespace
-#   command: oc replace --force -n openshift -f -
-#   args:
-#     stdin: "{{ lookup('file', item) }}"
-#   loop:
-#     - ./files/coolstore-monolith-binary-build-template.yaml
-#     - ./files/coolstore-monolith-pipeline-build-template.yaml
-#     - ./files/jaeger-all-in-one-template.yml
-  
-# - name: import sso74-image-stream to openshift namespace
-#   command: oc create -n openshift -f -
-#   args:
-#      stdin: "{{ lookup('file', './files/sso74-image-stream.yaml') }}"
-
-# - name: create ccn-sso74 templates to openshift namespace
-#   command: oc create -n openshift -f -
-#   args:
-#      stdin: "{{ lookup('file', './files/ccn-sso74-template.yaml') }}"
 
 - name: Create user projects
   include_tasks: create_project.yaml
@@ -139,7 +116,7 @@
   loop_control:
     loop_var: user
 
-# Must be after pipeline
+# Nexus must be after pipeline
 - name: Install nexus
   include_tasks: install-nexus.yaml
 
@@ -180,10 +157,6 @@
     name: amq-streams
     namespace: labs-kafka
   register: r_amqstreams_cr
-
-- name: Show amqstreams cr
-  debug:
-    msg: "Existing amqstreams project: {{ r_amqstreams_cr }}"
 
 - name: Install AMQ Streams
   when: r_amqstreams_cr.resources | list | length == 0
