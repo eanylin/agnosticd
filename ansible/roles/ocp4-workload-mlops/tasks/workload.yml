@@ -121,48 +121,6 @@
     ns: "{{ item[0] }}-{{ item[1] }}"
   loop: "{{ users|product(['prod', 'stage'])|list }}"
 
-# Search for rhamt
-# - name: Search for RHAMT
-#   when: ("m1" in modules)
-#   k8s_facts:
-#     kind: DeploymentConfig
-#     namespace: labs-infra
-#     name: rhamt-web-console
-#   register: rhamt_dc
-
-# deploy RHAMT
-# - name: Deploy RHAMT
-#   when: ("m1" in modules) and (rhamt_dc.resources | list | length == 0)
-#   include_tasks: install-rhamt.yaml
-
-# - name: Look for jaeger subscription
-#   when: ("m2" in modules or "m3" in modules)
-#   k8s_facts:
-#     api_version: operators.coreos.com/v1alpha1
-#     kind: Subscription
-#     name: jaeger-product
-#     namespace: openshift-operators
-#   register: r_jaeger_sub
-
-# Setup OpenShift Serverless via operator
-# - name: Look for serverless subscription
-#   when: ("m4" in modules)
-#   k8s_facts:
-#     api_version: operators.coreos.com/v1alpha1
-#     kind: Subscription
-#     name: serverless-operator
-#     namespace: openshift-operators
-#   register: r_serverless_sub
-
-# - name: show existing serverless sub
-#   when: ("m4" in modules)
-#   debug:
-#     msg: "existing serverless sub: {{ r_serverless_sub }}"
-
-# - name: Create OpenShift Objects for Serverless (knative)
-#   when: ("m4" in modules) and (r_serverless_sub.resources | list | length == 0)
-#   include_tasks: install-serverless.yaml
-
 - name: create user pipeline
   include_tasks: install-pipelines.yaml
   vars:
