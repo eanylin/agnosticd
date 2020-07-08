@@ -21,3 +21,26 @@
   retries: 200
   delay: 10
   until: r_amqstreams_crd.resources | list | length == 1
+
+# Install AMQ Streams CR
+- name: Create CR for AMQ Streams
+  k8s:
+    state: present
+    merge_type:
+    - strategic-merge
+    - merge
+    definition: "{{ lookup('file', item ) | from_yaml }}"
+  loop:
+  - ./files/amq_streams_cr.yaml
+
+# Wait for kafka-entity-operator pod to be up
+- name: "Wait for kafka-entity-operator pod to be in Ready state"
+  k8s_info:
+    kind: Pod
+    label_selectors:
+      - 'strimzi.io/name = kafka-entity-operator'
+    namespace: labs-kafka
+  register: pod_status
+  until: pod_status.resources[0].status.containerStatuses[0].ready == true
+  retries: 60
+  delay: 10
