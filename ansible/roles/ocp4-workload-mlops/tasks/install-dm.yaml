@@ -33,7 +33,6 @@
   loop:
   - ./files/dm_cr.yaml
 
-# Wait for DM kieserver pod to be up
 - name: "Wait for DM kieserver pod to be in Ready state"
   k8s_info:
     kind: Pod
@@ -41,18 +40,15 @@
       - 'service = dm-kieserver'
     namespace: labs-dm
   register: pod_status
-  until: pod_status.resources[0].status.containerStatuses[0].ready == true
-  retries: 60
+  until: (pod_status | json_query("resources[0].status.containerStatuses[0].ready") | bool) == true
+  retries: 40
   delay: 10
 
-# Wait for DM rhdmcentr pod to be up
-- name: "Wait for DM rhdmcentr pod to be in Ready state"
-  k8s_info:
-    kind: Pod
-    label_selectors:
-      - 'service = dm-rhdmcentr'
-    namespace: labs-dm
-  register: pod_status
-  until: pod_status.resources[0].status.containerStatuses[0].ready == true
-  retries: 60
+- name: wait for rhdmcentr to be running
+  uri:
+    url: https://dm-rhdmcentr-labs-dm.{{ route_subdomain }}/kie-wb.jsp
+    validate_certs: false
+  register: result
+  until: result.status == 200
+  retries: 40
   delay: 10

@@ -8,4 +8,4 @@ spec:
   environment: rhdm-authoring
   commonConfig:
     adminUser: admin
-    adminPassword: password
+    adminPassword: "{{workshop_kie_user_password}}"

@@ -41,6 +41,6 @@
       - 'strimzi.io/name = kafka-entity-operator'
     namespace: labs-kafka
   register: pod_status
-  until: pod_status.resources[0].status.containerStatuses[0].ready == true
-  retries: 60
+  until: (pod_status | json_query("resources[0].status.containerStatuses[0].ready") | bool) == true
+  retries: 40
   delay: 10
