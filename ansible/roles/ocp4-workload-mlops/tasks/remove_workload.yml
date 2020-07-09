@@ -21,13 +21,12 @@
   ignore_errors: yes
 
 - set_fact:
-      query: "results[].resources[].{name: metadata.name, namespace: metadata.namespace}"
-      operators_namespace: 
-        - openshift-operators
-        - labs-grafana
-        - labs-prometheus
-        - labs-infra
-
+    query: "results[].resources[].{name: metadata.name, namespace: metadata.namespace}"
+    operators_namespace: 
+      - openshift-operators
+      - labs-grafana
+      - labs-infra
+      
 - name: Get kfdef
   k8s_info:
     api_version: kfdef.apps.kubeflow.org/v1
@@ -99,8 +98,9 @@
     - labs-infra
     - labs-argocd
     - labs-kafka
-    - labs-nexus
-    
+    - labs-nexus    
+    - labs-dm
+
   ignore_errors: yes
 
 - name: delete template
