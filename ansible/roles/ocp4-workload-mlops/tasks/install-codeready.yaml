@@ -43,24 +43,20 @@
   retries: "120"
   delay: "15"
 
-- name: Get codeready keycloak deployment
+- name: Get sso secrets
   k8s_facts:
-    kind: Deployment
+    kind: Secret
     namespace: labs-infra
-    name: keycloak
-  register: r_keycloak_deployment
-
-- name: show cr
-  debug:
-    msg: "existing keycloak deployment: {{ r_keycloak_deployment }}"
+    name: che-identity-secret
+  register: sso_secret
 
 - name: set codeready username fact
   set_fact:
-    codeready_sso_admin_username: "{{ r_keycloak_deployment.resources[0].spec.template.spec.containers[0].env | selectattr('name','equalto','SSO_ADMIN_USERNAME') |map (attribute='value') | list | first }}"
+    codeready_sso_admin_username: "{{ sso_secret.resources[0].data.user | b64decode }}"
 
 - name: set codeready password fact
   set_fact:
-    codeready_sso_admin_password: "{{ r_keycloak_deployment.resources[0].spec.template.spec.containers[0].env | selectattr('name','equalto','SSO_ADMIN_PASSWORD') |map (attribute='value') | list | first }}"
+    codeready_sso_admin_password: "{{ sso_secret.resources[0].data.password | b64decode }}"
 
 - name: show codeready keycloak admin username
   debug:
