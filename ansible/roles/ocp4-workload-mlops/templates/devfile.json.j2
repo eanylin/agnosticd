@@ -42,7 +42,7 @@
         {
           "workdir": "${CHE_PROJECTS_ROOT}",
           "type": "exec",
-          "command": "oc login https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_SERVICE_PORT --insecure-skip-tls-verify=true",
+          "command": "oc login https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_SERVICE_PORT --insecure-skip-tls-verify=true -u {{user}} -p {{workshop_openshift_user_password}}",
           "component": "python-tools"
         }
       ]
