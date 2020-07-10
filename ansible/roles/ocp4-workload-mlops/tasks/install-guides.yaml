@@ -28,7 +28,8 @@
     -e ARGOCD_URL=https://argocd-server-labs-argocd.{{ route_subdomain }} \
     -e NEXUS_URL=https://nexus-labs-nexus.{{ route_subdomain }} \
     -e NEXUS_DOCKER_REGISTRY=nexus-docker-labs-nexus.{{ route_subdomain }} \
-    -e RHDM_URL=https://dm-rhdmcentr-labs-dm.{{ route_subdomain }}
+    -e RHDM_URL=https://dm-rhdmcentr-labs-dm.{{ route_subdomain }} \
+    -e GIT_USER_PASSWORD={{ gogs_pwd }}
 
  #   -e KEYCLOAK_URL=https://keycloak-labs-infra.{{ route_subdomain }} \    
 #   -e CHE_USER_NAME={{ workshop_che_user_name }}
