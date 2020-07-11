@@ -44,7 +44,7 @@
     namespace: "{{ ceph_namespace }}"
   register: out
   until: out | json_query("resources[0].status.phase=='Ready'")
-  retries: 40
+  retries: 60
   delay: 10
   loop:
     - {api_version: 'noobaa.io/v1alpha1', kind: 'NooBaa', name: 'noobaa'} 
