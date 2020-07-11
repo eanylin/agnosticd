@@ -1,16 +1,4 @@
 ---
-- name: create labs-infra project
-  k8s:
-    state: present
-    kind: Project
-    api_version: project.openshift.io/v1
-    definition:
-      metadata:
-        name: "labs-infra"
-        annotations:
-          openshift.io/description: ""
-          openshift.io/display-name: "Lab Infrastructure"
-
 - name: Remove cluster role if it exists
   command: "oc delete clusterrole pipelinerestrictor"
   ignore_errors: yes
