@@ -19,3 +19,4 @@
         SELDON_URL: "{% if ns=='stage' %}https://seldon-{{user}}-stage.{{route_subdomain}}{% elif ns=='prod' %}https://seldon-{{user}}-prod.{{route_subdomain}}{% endif %}"
         NEXUS_DOCKER_REGISTRY: "nexus-docker-labs-nexus.{{ route_subdomain }}"
         PIP_INDEX_URL: "https://nexus-labs-nexus.{{ route_subdomain }}/repository/pypi/simple"
+        WEB_NOTIFICATION_URL: "{% if ns=='stage' %}http://webnotifications-{{user}}-stage.{{route_subdomain}}{% elif ns=='prod' %}http://webnotifications-{{user}}-prod.{{route_subdomain}}{% endif %}"
