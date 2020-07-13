@@ -52,4 +52,15 @@ user_namespaces:
 binaries:
   - helm
   - oc
-  - gdown
+  #- dvc
+  #- gdown
+
+images_to_seed:
+  - name: nbviewer
+    uri: quay.io/odh-jupyterhub/nbviewer:latest
+  - name: ubi8-python-36
+    uri:  registry.redhat.io/ubi8/python-36:latest
+  - name: ubi8-minimal
+    uri: registry.redhat.io/ubi8/ubi-minimal:latest
+  - name: buildah
+    uri: registry.redhat.io/rhel8/buildah:latest

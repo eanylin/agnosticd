@@ -37,6 +37,7 @@
     - labs-argocd
     - labs-nexus
     - labs-dm
+    - labs-setup # Misc temp ns to setup the lab. To be deleted at the end
 
 - name: Install gogs
   include_tasks: install-gogs.yaml
@@ -56,13 +57,14 @@
 - name: Install mlflow
   include_tasks: install-mlflow.yaml
 
-# We wil resuse the s3 bucket from mlflow
-- name: Add data repo
-  include_tasks: setup-dvc.yaml
-  loop: "{{users}}"
-  loop_control:
-    loop_var: user
+# # We wil resuse the s3 bucket from mlflow
+# - name: Add data repo
+#   include_tasks: setup-dvc.yaml
+#   loop: "{{users}}"
+#   loop_control:
+#     loop_var: user
 
+  
 - name: Duplicate aws credentials
   include_tasks: dup_aws_credentials.yaml
   loop:
@@ -119,6 +121,11 @@
 # Nexus must be after pipeline
 - name: Install nexus
   include_tasks: install-nexus.yaml
+
+# We wil resuse the s3 bucket from mlflow
+# And after Nexus
+- name: Add data repo
+  include_tasks: setup-dvc.yaml
 
 - name: install argocd
   include_tasks: install-argocd.yaml
@@ -178,6 +185,18 @@
 - name: Install DM
   when: r_dm_cr.resources | list | length == 0
   include_tasks: install-dm.yaml
+
+- name: Preload images 
+  include_tasks: preload-images.yaml
+
+- name: Delete temp project
+  k8s:
+    state: absent
+    kind: Project
+    api_version: project.openshift.io/v1
+    name: "{{item}}"    
+  loop:
+    - labs-setup
 
 # Leave this as the last task in the playbook.
 - name: workload tasks complete

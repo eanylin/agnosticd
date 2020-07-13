@@ -45,15 +45,6 @@
 #   set_fact:
 #     bastion_fqdn: "{{ subdomain_base }}"
 
-- name: debug values
-  debug:
-    msg:
-    - "master URL: {{ master_url }}"
-    - "console URL: {{ console_url }}"
-    - "route subdomain: {{ route_subdomain }}"
-    - "ocp_username: {{ ocp_username }}"
-    #- "bastion host: {{ bastion_fqdn }}"
-
 - name: Get the number of worker nodes
   k8s_info:
     kind: Node
@@ -65,6 +56,19 @@
 - fail:
     msg: OCS 4 requires a min of 3 workers 
   when: nodes.resources | length < 3
+
+- name: Set num of worker nodes fact
+  set_fact:
+    num_worker_nodes: "{{nodes.resources | length}}"
+
+- name: debug values
+  debug:
+    msg:
+    - "master URL: {{ master_url }}"
+    - "console URL: {{ console_url }}"
+    - "route subdomain: {{ route_subdomain }}"
+    - "ocp_username: {{ ocp_username }}"
+    - "num_worker_nodes: {{ num_worker_nodes }}"
 
 - name: Check whether binary exists
   include_tasks: check-binary-exists.yaml

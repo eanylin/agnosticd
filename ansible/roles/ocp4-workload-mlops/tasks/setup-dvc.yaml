@@ -1,107 +1,24 @@
 ---
-- name: "Check if repository {{ data_repo_name }} exists in git for user {{ user }}"
-  uri:
-    url: https://gogs-labs-infra.{{ route_subdomain }}/api/v1/repos/{{ user }}/{{ data_repo_name }}
-    user: "{{ user }}"
-    password: "{{ gogs_pwd }}"
-    force_basic_auth: true
-    status_code: 200,404
-  register: repo_result
+- name: Create data pvc
+  k8s:
+    definition:
+      kind: PersistentVolumeClaim
+      apiVersion: v1
+      metadata:        
+        name: data-pvc
+        namespace: labs-setup
+      spec:
+        accessModes:
+          - ReadWriteMany
+        resources:
+          requests:
+            storage: 4Gi
+        storageClassName: ocs-storagecluster-cephfs
+        volumeMode: Filesystem
 
-- set_fact:
-    data_tmp_dir: "{{ tmp_dir }}/data"
-
-- set_fact:
-    download_file: "{{data_tmp_dir}}/creditcard.tar.bz2"
-
-- name: Make temp directory
-  file:
-    path: "{{data_tmp_dir}}"
-    state: directory
-
-- name: Check if data file exists
-  stat:
-    path: "{{download_file}}"
-  register: stat_result
-  
-- name: Download data set
-  command: "gdown --id {{data_gdrive_id}} -O {{download_file}}"
-  when: not stat_result.stat.exists
-
-- name: Untar data set
-  unarchive:
-    src: "{{download_file}}"
-    dest: "{{data_tmp_dir}}"
-    remote_src: yes
-  when: not stat_result.stat.exists
-
-- block:
-    - name: "Create git repository {{ data_repo_name }} for user {{ user }}"
-      uri:
-        url: https://gogs-labs-infra.{{ route_subdomain }}/api/v1/user/repos
-        method: POST
-        body: '{"name": "{{ data_repo_name }}", "private": false}'
-        body_format: json
-        user: "{{ user }}"
-        password: "{{ gogs_pwd }}"
-        status_code: 200,201
-        force_basic_auth: true
-      
-    - name: Remove .git config for user {{ user }}
-      file:
-        path: "{{data_tmp_dir}}/{{item}}"
-        state: absent
-      loop:
-        - .git
-        - .dvc
-        
-    - name: Get AWS credentials for user {{ user }}
-      k8s_info:
-        api_version: v1
-        kind: Secret
-        name: mlflow-obc
-        namespace: "{{user}}-dev"
-      register: result
-
-    - set_fact:
-        aws_access_key: "{{ result.resources[0].data['AWS_ACCESS_KEY_ID'] | b64decode }}"
-        aws_secret_key: "{{ result.resources[0].data['AWS_SECRET_ACCESS_KEY'] | b64decode }}"
-
-    - name: Get bucket name for user {{ user }}
-      k8s_info:
-        api_version: v1
-        kind: ConfigMap
-        name: mlflow-obc
-        namespace: "{{user}}-dev"
-      register: result
-
-    - set_fact:
-        bucket_name: "{{ result.resources[0].data['BUCKET_NAME'] }}"
-
-    - name: Create repository and push for user {{ user }}
-      shell: |
-        git init
-        git remote add {{ user }} https://{{ user }}:{{ gogs_pwd }}@gogs-labs-infra.{{ route_subdomain }}/{{ user }}/{{ data_repo_name }}.git
-        git config --local user.email "{{ user }}@example.com"
-        git config --local user.name "{{ user }}"
-
-        dvc init        
-        dvc remote add -d myremote s3://{{ bucket_name }}/dvcf4g2
-        dvc remote modify myremote endpointurl https://s3-openshift-storage.{{route_subdomain}}
-        git commit -a -m "Initialize DVC"
-
-        dvc add *.csv
-        git add .gitignore *.dvc
-
-        git commit -a -m "new data"
-        git tag -a v1.0 -m "version 1.0"
-        git push -f --all {{ user }}
-        git push -f --tags {{ user }}
-
-        dvc push 
-      args:
-        chdir: "{{data_tmp_dir}}"
-      environment:
-        AWS_ACCESS_KEY_ID: "{{aws_access_key}}"
-        AWS_SECRET_ACCESS_KEY: "{{aws_secret_key}}"
-  when: repo_result.status != 200
+- name: Add data repo to user {{user}}
+  include_tasks: add-dvc-repo.yaml  
+  loop: "{{users}}"
+  loop_control:
+    loop_var: user
+    label: user
