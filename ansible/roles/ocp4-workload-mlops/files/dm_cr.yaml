@@ -5,7 +5,20 @@ metadata:
   name: dm
   namespace: labs-dm
 spec:
-  environment: rhdm-authoring
+  environment: rhdm-production-immutable
+  useImageTags: true
   commonConfig:
     adminUser: admin
     adminPassword: "{{workshop_kie_user_password}}"
+  objects:
+    servers:
+      - id: drl-fraud
+        deployments: 1
+        replicas: 1
+        build:
+          kieServerContainerDeployment: >-
+            drl-fraud=com.myspace:drl-fraud:1.0.0-SNAPSHOT
+          gitSource:
+            uri: >-
+              https://github.com/jiajunngjj/drl-fraud-demo.git
+            reference: master
