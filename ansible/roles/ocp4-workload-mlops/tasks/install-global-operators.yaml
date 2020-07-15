@@ -15,7 +15,7 @@
   k8s_facts:
     api_version: operators.coreos.com/v1alpha1
     kind: ClusterServiceVersion
-    name: opendatahub-operator.v0.6.1
+    name: opendatahub-operator.v0.7.0
     namespace: openshift-operators
   register: result
   until: result | json_query("resources[0].status.phase=='Succeeded'")
