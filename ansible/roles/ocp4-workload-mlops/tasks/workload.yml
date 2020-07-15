@@ -178,10 +178,6 @@
     namespace: labs-dm
   register: r_dm_cr
 
-- name: Show DM cr
-  debug:
-    msg: "Existing DM project: {{ r_dm_cr }}"
-
 - name: Install DM
   when: r_dm_cr.resources | list | length == 0
   include_tasks: install-dm.yaml

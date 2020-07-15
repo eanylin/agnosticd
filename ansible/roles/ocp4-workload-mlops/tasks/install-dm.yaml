@@ -22,6 +22,34 @@
   delay: 10
   until: r_dm_crd.resources | list | length == 1
 
+- name: Get global pull secrets from openshift-config
+  k8s_facts:
+    api_version: v1
+    kind: Secret
+    namespace: openshift-config
+    name: pull-secret
+  register: pull_secret
+
+- name: Create pull secret in labs-dm
+  k8s:
+    definition:
+      apiVersion: v1
+      kind: Secret      
+      data: "{{pull_secret.resources[0].data}}"              
+      metadata:
+        name: pull-secret
+        namespace: labs-dm
+      type: kubernetes.io/dockerconfigjson
+
+- name: Use the secrets for builder SA
+  command: oc secrets link builder pull-secret -n labs-dm
+
+- name: Import the rhdm-kieserver-rhel8
+  command: |
+    oc import-image rhdm-7/rhdm-kieserver-rhel8:7.7.1 \
+    --from=registry.redhat.io/rhdm-7/rhdm-kieserver-rhel8:7.7.1 \
+    --reference-policy=local --confirm -n labs-dm
+
 # Install DM CR
 - name: Create CR for DM
   k8s:
@@ -41,7 +69,7 @@
     namespace: labs-dm
   register: pod_status
   until: (pod_status | json_query("resources[0].status.containerStatuses[0].ready") | bool) == true
-  retries: 40
+  retries: 60
   delay: 10
 
 - name: wait for rhdmcentr to be running
