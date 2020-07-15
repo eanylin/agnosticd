@@ -3,8 +3,10 @@
   command: helm list -n labs-nexus --filter nexus --deployed
   register: result
 
+# Each image takes about 500MB and we have 2
+# Plus pypi cache 
 - name: Install nexus 
-  command: helm install nexus ltsai/nexus -n labs-nexus
+  command: helm install nexus ltsai/nexus -n labs-nexus --set sonatype-nexus.persistence.storageSize={{((users | length) * 1.5)| round(0, 'ceil') | int}}Gi
   when: "'deployed' not in result.stdout"
 
 - name: Create docker registry service
