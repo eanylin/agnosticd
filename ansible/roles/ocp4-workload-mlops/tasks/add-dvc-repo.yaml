@@ -78,7 +78,7 @@
                         set -eo pipefail
 
                         pip install -U pip setuptools
-                        pip install dvc==0.94.0
+                        pip install dvc==0.94.0 boto3==1.14.7
                           
                         if [ ! -f "{{download_file}}" ]; then
                           pip install gdown
@@ -107,6 +107,8 @@
                         git tag -a v1.0 -m "version 1.0"
                         git push -f --all {{ user }}
                         git push -f --tags {{ user }}
+
+                        dvc push
                     env:
                       - name: AWS_ACCESS_KEY_ID
                         value: "{{aws_access_key}}"

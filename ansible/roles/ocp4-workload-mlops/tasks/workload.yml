@@ -83,7 +83,7 @@
   vars:
     user: "{{ item[0] }}"
     ns: "{{ item[1] }}"    
-  loop: "{{ users|product(['dev', 'stage', 'labs-infra'])|list }}"
+  loop: "{{ users|product(['dev', 'stage', 'prod', 'labs-infra'])|list }}"
 
 - name: install global operators
   include_tasks: install-global-operators.yaml
