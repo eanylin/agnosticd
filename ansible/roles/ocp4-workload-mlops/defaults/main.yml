@@ -57,10 +57,12 @@ binaries:
 
 images_to_seed:
   - name: nbviewer
-    uri: quay.io/odh-jupyterhub/nbviewer:latest
+    uri: quay.io/odh-jupyterhub/nbviewer@sha256:21ce1db27e96305718a06359c86139680b8138966c614b4c94796a788eeac98c
   - name: ubi8-python-36
-    uri:  registry.redhat.io/ubi8/python-36:latest
+    uri: registry.redhat.io/ubi8/python-36:latest
   - name: ubi8-minimal
     uri: registry.redhat.io/ubi8/ubi-minimal:latest
   - name: buildah
     uri: registry.redhat.io/rhel8/buildah:latest
+  - name: rh-mlops-workshop-notebook
+    uri: quay.io/ltsai/rh-mlops-workshop-notebook:3.6
