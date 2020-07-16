@@ -8,7 +8,7 @@ spec:
   environment: rhdm-production-immutable
   useImageTags: true
   commonConfig:
-    adminUser: admin
+    adminUser: "{{workshop_kie_user_name}}"
     adminPassword: "{{workshop_kie_user_password}}"
   objects:
     servers:

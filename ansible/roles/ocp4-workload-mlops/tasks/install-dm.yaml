@@ -57,9 +57,9 @@
     merge_type:
     - strategic-merge
     - merge
-    definition: "{{ lookup('file', item ) | from_yaml }}"
+    definition: "{{ lookup('template', item ) | from_yaml }}"
   loop:
-  - ./files/dm_cr.yaml
+  - dm_cr.yaml.j2
 
 - name: "Wait for DM kieserver pod to be in Ready state"
   k8s_info:
@@ -72,11 +72,28 @@
   retries: 60
   delay: 10
 
-- name: wait for rhdmcentr to be running
-  uri:
-    url: https://dm-rhdmcentr-labs-dm.{{ route_subdomain }}/kie-wb.jsp
-    validate_certs: false
-  register: result
-  until: result.status == 200
-  retries: 40
-  delay: 10
+# - name: wait for rhdmcentr to be running
+#   uri:
+#     url: https://dm-rhdmcentr-labs-dm.{{ route_subdomain }}/kie-wb.jsp
+#     validate_certs: false
+#   register: result
+#   until: result.status == 200
+#   retries: 40
+#   delay: 10
+
+- name: Create kie secrets for users
+  k8s:
+    definition:
+      kind: Secret
+      apiVersion: v1
+      metadata:
+        name: kie-admin
+        namespace: "{{ns}}"
+      data:
+        password: "{{workshop_kie_user_password | b64encode }}"
+        user: "{{workshop_kie_user_name | b64encode}}"
+      type: Opaque
+  vars:
+    user: "{{ item[0] }}"
+    ns: "{{ item[0] }}-{{ item[1] }}"    
+  loop: "{{ users|product(['prod'])|list }}"
