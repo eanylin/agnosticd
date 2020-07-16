@@ -54,8 +54,6 @@ user_namespaces:
 binaries:
   - helm
   - oc
-  #- dvc
-  #- gdown
 
 images_to_seed:
   - name: nbviewer

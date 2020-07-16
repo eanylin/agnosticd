@@ -45,9 +45,6 @@
 - name: Install gogs filter
   include_tasks: install-gogs-filter.yaml
 
-# - name: Install gogs admission 
-#   include_task: install-admission-webhook.yaml
-
 - name: Add gogs users 
   include_tasks: add-gogs-users.yaml
   loop: "{{users}}"
@@ -56,14 +53,6 @@
 
 - name: Install mlflow
   include_tasks: install-mlflow.yaml
-
-# # We wil resuse the s3 bucket from mlflow
-# - name: Add data repo
-#   include_tasks: setup-dvc.yaml
-#   loop: "{{users}}"
-#   loop_control:
-#     loop_var: user
-
   
 - name: Duplicate aws credentials
   include_tasks: dup_aws_credentials.yaml
@@ -99,7 +88,7 @@
   vars:
     user: "{{ item[0] }}"
     ns: "{{ item[0] }}-{{ item[1] }}"
-  loop: "{{ users|product(['prod', 'stage'])|list }}"
+  loop: "{{ users|product(['prod'])|list }}"
 
 - name: create user pipeline
   include_tasks: install-pipelines.yaml
@@ -117,6 +106,9 @@
   loop: "{{users}}"
   loop_control:
     loop_var: user
+
+# - name: Install gogs admission 
+#   include_tasks: install-admission-webhook.yaml
 
 # Nexus must be after pipeline
 - name: Install nexus
