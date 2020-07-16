@@ -14,7 +14,7 @@
   ignore_errors: yes
 
 - name: Create webnotifications deployment
-  command: "oc new-app --docker-image=quay.io/kwkoo/webnotifications --env=TZ=Asia/Singapore -n {{ns}}"
+  command: "oc new-app --docker-image=quay.io/kwkoo/webnotifications --env=TZ=Asia/Singapore --env=PINGINTERVAL=10 -n {{ns}}"
 
 - name: Create route for webnotifications
   command: "oc expose svc/webnotifications -n {{ns}}"
