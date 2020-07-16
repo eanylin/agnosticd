@@ -182,6 +182,13 @@
   when: r_dm_cr.resources | list | length == 0
   include_tasks: install-dm.yaml
 
+- name: Install consumer app
+  include_tasks: install-consumer-app.yaml
+  vars:
+    user: "{{ item[0] }}"
+    ns: "{{ item[0] }}-{{ item[1] }}"
+  loop: "{{ users|product(['prod'])|list }}"
+
 - name: Preload images 
   include_tasks: preload-images.yaml
 

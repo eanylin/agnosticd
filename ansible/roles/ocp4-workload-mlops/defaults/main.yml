@@ -68,3 +68,5 @@ images_to_seed:
     uri: registry.redhat.io/rhel8/buildah:latest
   - name: rh-mlops-workshop-notebook
     uri: quay.io/ltsai/rh-mlops-workshop-notebook:3.6
+
+consumer_app_image: quay.io/kwkoo/kafka-consumer:latest
