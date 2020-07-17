@@ -71,16 +71,7 @@
   until: (pod_status | json_query("resources[0].status.containerStatuses[0].ready") | bool) == true
   retries: 60
   delay: 10
-
-# - name: wait for rhdmcentr to be running
-#   uri:
-#     url: https://dm-rhdmcentr-labs-dm.{{ route_subdomain }}/kie-wb.jsp
-#     validate_certs: false
-#   register: result
-#   until: result.status == 200
-#   retries: 40
-#   delay: 10
-
+  
 - name: Create kie secrets for users
   k8s:
     definition:
