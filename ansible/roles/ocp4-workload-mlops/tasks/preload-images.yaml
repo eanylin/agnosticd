@@ -39,7 +39,7 @@
     namespace: labs-setup
   register: result
   until: result | json_query(query)
-  retries: 80
+  retries: 40
   delay: 10
   loop: "{{images_to_seed}}"
   loop_control:

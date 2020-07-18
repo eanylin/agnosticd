@@ -125,8 +125,8 @@
 - name: install guides
   include_tasks: install-guides.yaml
   vars:
-    guide: "{{ module_titles[0].name }}"
-  #loop: "{{ module_titles }}"
+    guide: "{{ item.name }}"
+  loop: "{{ module_titles }}"
 
 - name: install username distribution
   include_tasks: install-username-distribution.yaml

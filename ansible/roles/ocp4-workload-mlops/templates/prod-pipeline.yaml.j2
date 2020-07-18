@@ -1,150 +1,150 @@
-# ---
-# kind: PersistentVolumeClaim
-# apiVersion: v1
-# metadata:
-#   name: prod-pipeline-pvc
-# spec:
-#   accessModes:
-#     - ReadWriteMany
-#   resources:
-#     requests:
-#       storage: 1Gi
-#   storageClassName: ocs-storagecluster-cephfs
-#   volumeMode: Filesystem
-# ---
-# apiVersion: tekton.dev/v1beta1
-# kind: Task
-# metadata:
-#   name: echo-params
-# spec:
-#   params:
-#   - name: value
-#   steps:
-#   - name: echo-params
-#     image: registry.redhat.io/ubi8/ubi-minimal
-#     script: echo "$(params.value)"
-# ---
-# apiVersion: tekton.dev/v1beta1
-# kind: Task
-# metadata:
-#   name: clean-workspace
-# spec:  
-#   workspaces:
-#     - name: workspace
-#       mountPath: /workspace
-#   steps:
-#   - name: clean
-#     image: registry.redhat.io/ubi8/ubi-minimal
-#     script: |
-#       #!/bin/bash
-#       rm -rf /workspace/*
-# ---
-# apiVersion: tekton.dev/v1beta1
-# kind: Task
-# metadata:
-#   name: openshift-client
-# spec:
-#   params:
-#   - name: gitrevision
-#     type: string
-#   steps:
-#     - name: oc
-#       image: quay.io/openshift/origin-cli:latest
-#       script: |
-#         #!/bin/bash
-#         oc tag {{user}}-stage/model:$(inputs.params.gitrevision) {{user}}-prod/model:$(inputs.params.gitrevision)
-# ---
-# apiVersion: tekton.dev/v1alpha1
-# kind: Task
-# metadata:
-#   name: deploy
-# spec:
-#   resources:
-#     inputs:
-#     - name: source
-#       type: git
-#   inputs:
-#     params:
-#       - name: yaml_file
-#         type: string
-#         default: /workspace/source/workshop/pipeline/seldon-simple-model.yaml 
-#       - name: image_url
-#         type: string
-#         default: image-registry.openshift-image-registry.svc:5000/{{user}}-prod/model
-#       - name: gitrevision
-#         type: string
-#         default: latest
-#   workspaces:
-#     - name: workspace
-#       mountPath: /workspace
-#   steps:
-#     - name: check-git-rev
-#       image: registry.redhat.io/openshift-pipelines-tech-preview/pipelines-git-init-rhel8@sha256:bb744988e87cc556873098885ee1a7fc1ef7b6c1ea24e3a4d7a5e518edb22838
-#       script: |
-#         #!/bin/bash
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: prod-pipeline-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: ocs-storagecluster-cephfs
+  volumeMode: Filesystem
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: echo-params
+spec:
+  params:
+  - name: value
+  steps:
+  - name: echo-params
+    image: registry.redhat.io/ubi8/ubi-minimal
+    script: echo "$(params.value)"
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: clean-workspace
+spec:  
+  workspaces:
+    - name: workspace
+      mountPath: /workspace
+  steps:
+  - name: clean
+    image: registry.redhat.io/ubi8/ubi-minimal
+    script: |
+      #!/bin/bash
+      rm -rf /workspace/*
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: openshift-client
+spec:
+  params:
+  - name: gitrevision
+    type: string
+  steps:
+    - name: oc
+      image: quay.io/openshift/origin-cli:latest
+      script: |
+        #!/bin/bash
+        oc tag {{user}}-stage/model:$(inputs.params.gitrevision) {{user}}-prod/model:$(inputs.params.gitrevision)
+---
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: deploy
+spec:
+  resources:
+    inputs:
+    - name: source
+      type: git
+  inputs:
+    params:
+      - name: yaml_file
+        type: string
+        default: /workspace/source/workshop/pipeline/seldon-simple-model.yaml 
+      - name: image_url
+        type: string
+        default: image-registry.openshift-image-registry.svc:5000/{{user}}-prod/model
+      - name: gitrevision
+        type: string
+        default: latest
+  workspaces:
+    - name: workspace
+      mountPath: /workspace
+  steps:
+    - name: check-git-rev
+      image: registry.redhat.io/openshift-pipelines-tech-preview/pipelines-git-init-rhel8@sha256:bb744988e87cc556873098885ee1a7fc1ef7b6c1ea24e3a4d7a5e518edb22838
+      script: |
+        #!/bin/bash
         
-#         GIT_REV=`(cd /workspace/source && git rev-parse --short HEAD)`        
-#         echo "GIT REVISION: $GIT_REV"
-#     - name: seldon
-#       image: quay.io/openshift/origin-cli:latest
-#       script: |
-#         #!/bin/bash
+        GIT_REV=`(cd /workspace/source && git rev-parse --short HEAD)`        
+        echo "GIT REVISION: $GIT_REV"
+    - name: seldon
+      image: quay.io/openshift/origin-cli:latest
+      script: |
+        #!/bin/bash
         
-#         echo "YAML FILE: $(inputs.params.yaml_file)"
-#         echo "IMAGE URL: $(inputs.params.image_url):$(inputs.params.gitrevision)"
+        echo "YAML FILE: $(inputs.params.yaml_file)"
+        echo "IMAGE URL: $(inputs.params.image_url):$(inputs.params.gitrevision)"
         
-#         sed -e "s|@IMAGE_URL@|$(inputs.params.image_url)|g" -e "s|@IMAGE_TAG@|$(inputs.params.gitrevision)|g" "$(inputs.params.yaml_file)" | oc apply -f -
-# ---
-# apiVersion: tekton.dev/v1beta1
-# kind: Pipeline
-# metadata:
-#   name: pipeline
-# spec:
-#   workspaces:
-#   - name: workspace
-#   resources:
-#   - name: source
-#     type: git
-#   params:
-#   - name: gitrevision
-#     type: string
-#     default: default
-#   tasks:
-#   - name: clean-workspace
-#     workspaces:
-#       - name: workspace
-#         workspace: workspace
-#     taskRef:
-#       kind: Task
-#       name: clean-workspace
-#   - name: echo-image-tag
-#     taskRef:
-#       name: echo-params
-#     runAfter:
-#       - clean-workspace
-#     params:
-#       - name: value
-#         value: $(params.gitrevision)
-#   - name: tag-to-production
-#     params:
-#     - name: gitrevision
-#       value: "$(params.gitrevision)"
-#     taskRef:
-#       name: openshift-client
-#     runAfter:
-#       - echo-image-tag
-#   - name: deploy
-#     params:
-#     - name: gitrevision
-#       value: "$(params.gitrevision)"
-#     workspaces:
-#       - name: workspace
-#         workspace: workspace
-#     resources:
-#       inputs:
-#       - name: source
-#         resource: source
-#     taskRef:
-#       name: deploy
-#     runAfter:
-#       - tag-to-production
+        sed -e "s|@IMAGE_URL@|$(inputs.params.image_url)|g" -e "s|@IMAGE_TAG@|$(inputs.params.gitrevision)|g" "$(inputs.params.yaml_file)" | oc apply -f -
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: pipeline
+spec:
+  workspaces:
+  - name: workspace
+  resources:
+  - name: source
+    type: git
+  params:
+  - name: gitrevision
+    type: string
+    default: default
+  tasks:
+  - name: clean-workspace
+    workspaces:
+      - name: workspace
+        workspace: workspace
+    taskRef:
+      kind: Task
+      name: clean-workspace
+  - name: echo-image-tag
+    taskRef:
+      name: echo-params
+    runAfter:
+      - clean-workspace
+    params:
+      - name: value
+        value: $(params.gitrevision)
+  - name: tag-to-production
+    params:
+    - name: gitrevision
+      value: "$(params.gitrevision)"
+    taskRef:
+      name: openshift-client
+    runAfter:
+      - echo-image-tag
+  - name: deploy
+    params:
+    - name: gitrevision
+      value: "$(params.gitrevision)"
+    workspaces:
+      - name: workspace
+        workspace: workspace
+    resources:
+      inputs:
+      - name: source
+        resource: source
+    taskRef:
+      name: deploy
+    runAfter:
+      - tag-to-production

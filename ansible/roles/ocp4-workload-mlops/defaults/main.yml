@@ -6,13 +6,13 @@ silent: False
 num_users: 10
 
 module_titles:
-  - { name: m1, title: "Click here to get started", path: /workshop/mlops/lab/kubernetes-overview }
-  # - { name: m1, title: "Navigating OpenShift Web Console", path: /workshop/mlops/lab/navigating-openshift-ui }
-  # - { name: m1, title: "Getting Started with ML Ops", path: /workshop/mlops/lab/getting-started-mlops }
-  # - { name: m1, title: "Your Workshop Environment", path: /workshop/mlops/lab/workshop-environment }
-  # - { name: m1, title: "Exploring Data", path: /workshop/mlops/lab/exploring-data }
-  # - { name: m1, title: "Build the First Model", path: /workshop/mlops/lab/building-the-first-model }
-  # - { name: m1, title: "Exploring OpenShift", path: /workshop/mlops/lab/exploring-openshift }
+  - { name: m1, title: "Kubernetes Overview", path: /workshop/mlops/lab/kubernetes-overview }
+  - { name: m1, title: "Navigating OpenShift Web Console", path: /workshop/mlops/lab/navigating-openshift-ui }
+  - { name: m1, title: "Getting Started with ML Ops", path: /workshop/mlops/lab/getting-started-mlops }
+  - { name: m1, title: "Your Workshop Environment", path: /workshop/mlops/lab/workshop-environment }
+  - { name: m1, title: "Exploring Data", path: /workshop/mlops/lab/exploring-data }
+  - { name: m1, title: "Build the First Model", path: /workshop/mlops/lab/building-the-first-model }
+  - { name: m1, title: "Exploring OpenShift", path: /workshop/mlops/lab/exploring-openshift }
  
 guid: 1002
 gogs_admin_user: opentlc-mgr
