@@ -1,0 +1,23 @@
+# apiVersion: tekton.dev/v1alpha1
+# kind: PipelineRun
+# metadata:
+#   generateName: pipeline-
+# spec:
+#   pipelineRef:
+#     name: pipeline
+#   workspaces:
+#   - name: workspace 
+#     persistentVolumeClaim:
+#       claimName: prod-pipeline-pvc
+#   resources:
+#     - name: source
+#       resourceSpec:
+#         type: git
+#         params:
+#           - name: revision
+#             value: $(params.image_tag)
+#           - name: url
+#             value: https://user2:r3dh4t1!@gogs-labs-infra.apps.cluster-b13c.b13c.sandbox295.opentlc.com/user2/datascience-examples.git
+#   params:
+#     - name: image_tag
+#       value: a562ddb
