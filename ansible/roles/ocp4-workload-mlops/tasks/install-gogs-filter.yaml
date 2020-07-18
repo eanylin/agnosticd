@@ -16,3 +16,15 @@
 
 - name: Create service for gogs-filter
   command: "oc expose dc/gogsfilter --port=8080 -n labs-infra"
+
+- name: Wait for gogsfilter pod to be ready
+  k8s_facts:
+    api_version: v1
+    namespace: labs-infra
+    kind: Pod
+    label_selectors:
+    - deploymentconfig = gogsfilter
+  register: result
+  until: (result | json_query("resources[0].status.containerStatuses[0].ready") | bool) == true
+  retries: 40
+  delay: 10
