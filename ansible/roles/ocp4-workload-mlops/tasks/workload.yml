@@ -107,8 +107,8 @@
   loop_control:
     loop_var: user
 
-# - name: Install gogs admission 
-#   include_tasks: install-admission-webhook.yaml
+- name: Install gogs admission 
+  include_tasks: install-admission-webhook.yaml
 
 # Nexus must be after pipeline
 - name: Install nexus
