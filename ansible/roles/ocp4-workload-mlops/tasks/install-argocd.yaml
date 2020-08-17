@@ -15,7 +15,7 @@
     api_version: rbac.authorization.k8s.io/v1
     namespace: labs-argocd
     label_selectors:
-      olm.owner = argocd-operator.v0.0.11
+      olm.owner = argocd-operator.v0.0.12
   register: argocd_rolebinding
   retries: 5
   delay: 10
