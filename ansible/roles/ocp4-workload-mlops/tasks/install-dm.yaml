@@ -69,7 +69,7 @@
     namespace: labs-dm
   register: pod_status
   until: (pod_status | json_query("resources[0].status.containerStatuses[0].ready") | bool) == true
-  retries: 80
+  retries: 100
   delay: 10
   
 - name: Create kie secrets for users
