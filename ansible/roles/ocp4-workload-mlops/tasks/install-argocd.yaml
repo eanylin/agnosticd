@@ -41,10 +41,10 @@
       kind: Role
       apiVersion: rbac.authorization.k8s.io/v1
       metadata:
-        name: argocd-operator.v0.0.11-argocd-redis-ha
+        name: argocd-operator.v0.0.12-argocd-redis-ha
         namespace: labs-argocd
         labels:
-          olm.owner: argocd-operator.v0.0.11
+          olm.owner: argocd-operator.v0.0.12
           olm.owner.kind: ClusterServiceVersion
           olm.owner.namespace: labs-argocd
       rules:
@@ -62,10 +62,10 @@
       kind: RoleBinding
       apiVersion: rbac.authorization.k8s.io/v1
       metadata:
-        name: argocd-operator.v0.0.11-argocd-redis-ha
+        name: argocd-operator.v0.0.12-argocd-redis-ha
         namespace: labs-argocd
         labels:
-          olm.owner: argocd-operator.v0.0.11
+          olm.owner: argocd-operator.v0.0.12
           olm.owner.kind: ClusterServiceVersion
           olm.owner.namespace: labs-argocd
       subjects:
@@ -75,7 +75,7 @@
       roleRef:
         apiGroup: rbac.authorization.k8s.io
         kind: Role
-        name: argocd-operator.v0.0.11-argocd-redis-ha
+        name: argocd-operator.v0.0.12-argocd-redis-ha
   when: not role_binding_argocd_redis_ha_exists
   
 - name: Wait for ArgoCD CRD to be ready
