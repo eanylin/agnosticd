@@ -8,6 +8,13 @@ spec:
   kafka:
     version: 2.5.0
     replicas: 3
+    resources:
+      requests:
+        memory: 2Gi
+        cpu: 500m
+      limits: 
+        memory: 4Gi
+        cpu: 2
     listeners:
       external:
         type: loadbalancer
@@ -21,6 +28,13 @@ spec:
       type: ephemeral
   zookeeper:
     replicas: 3
+    resources:
+      requests:
+        memory: 2Gi
+        cpu: 500m
+      limits: 
+        memory: 4Gi
+        cpu: 2
     storage:
       type: ephemeral
   entityOperator:
