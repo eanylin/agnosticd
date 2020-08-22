@@ -90,6 +90,36 @@
     set_cephfs_default_sc: true
     ocs_version: 4.4.2
     ocs_operator_channel: stable-4.4
+    ceph_osd:
+      resources:
+        requests:
+          cpu: 2
+          memory: 8Gi
+    ceph_mon:
+      resources:
+        requests:
+          cpu: 2
+          memory: 8Gi
+    ceph_mgr:
+      resources:
+        requests:
+          cpu: 2
+          memory: 8Gi
+    ceph_mds:
+      resources:
+        requests:
+          cpu: 2
+          memory: 8Gi
+    noobaa_core:
+      resources:
+        requests:
+          cpu: 2
+          memory: 8Gi
+    noobaa_db:
+      resources:
+        requests:
+          cpu: 2
+          memory: 8Gi
   
 - name: Add additional catalog source
   k8s:

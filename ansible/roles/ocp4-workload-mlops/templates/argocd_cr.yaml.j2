@@ -23,9 +23,12 @@ spec:
 
   rbac:
     policy: |
-      g, system:cluster-admins, role:admin
-      g, argocdusers, role:readonly
-      g, argocdadmins, role:admin
+      p, {{ocp_username}}, applications, sync, default/*, allow      
+{% for user in users %}
+      p, {{user}}, applications, sync, default/{{user}}-stage, allow
+      p, {{user}}, applications, sync, default/{{user}}-prod, allow
+{% endfor %} 
+    scopes: '[name]'
   initialRepositories: |
 {% for user in users %}
     - url: "https://gogs-labs-infra.{{ route_subdomain }}/{{ user }}/{{user_deploy_repo_name}}.git"

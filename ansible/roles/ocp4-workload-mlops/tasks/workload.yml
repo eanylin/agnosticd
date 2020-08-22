@@ -20,24 +20,35 @@
     user: "{{ item[0] }}"
   loop: "{{ users|product(user_namespaces)|list }}"
 
-- name: "Create Project"
-  k8s:
-    state: present
-    kind: Project
-    api_version: project.openshift.io/v1
-    definition:
-      metadata:
-        name: "{{item}}"
-        annotations:
-          openshift.io/description: ""
-          openshift.io/display-name: "Lab Infrastructure"
-  loop:
-    - labs-infra
-    - labs-kafka
-    - labs-argocd
-    - labs-nexus
-    - labs-dm
-    - labs-setup # Misc temp ns to setup the lab. To be deleted at the end
+- name: "Create Infra Project"
+  include_tasks: create-infra-project.yaml
+  loop: "{{infra_projects}}"
+  loop_control:
+    loop_var: name  
+    
+# - name: "Create Project"
+#   k8s:
+#     state: present
+#     kind: Project
+#     api_version: project.openshift.io/v1
+#     definition:
+#       metadata:
+#         name: "{{item}}"
+#         annotations:
+#           openshift.io/description: ""
+#           openshift.io/display-name: "Lab Infrastructure"
+#   loop:
+#     - labs-infra
+#     - labs-kafka
+#     - labs-argocd
+#     - labs-nexus
+#     - labs-dm
+#     - labs-setup # Misc temp ns to setup the lab. To be deleted at the end
+
+# - name: create CPU LimitRange for {{ name }}  project for user {{ user }}
+#   k8s:
+#     state: present
+#     definition: "{{ lookup('template', './templates/limitrange.yaml.j2' ) | from_yaml }}"
 
 - name: Install gogs
   include_tasks: install-gogs.yaml

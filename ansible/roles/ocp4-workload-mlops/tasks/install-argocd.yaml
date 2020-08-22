@@ -9,7 +9,7 @@
 
 # On OCP 4.4.11, role binding for argocd-redis-ha
 # doesn't get created for argocd operator v0.0.11.
-- name: Wait until all 6 argocd role bindings appear
+- name: Wait until all 5 argocd role bindings appear
   k8s_facts:
     kind: RoleBinding
     api_version: rbac.authorization.k8s.io/v1
@@ -19,7 +19,7 @@
   register: argocd_rolebinding
   retries: 5
   delay: 10
-  until: argocd_rolebinding.resources | list | length == 6
+  until: argocd_rolebinding.resources | list | length == 5
   ignore_errors: yes
 
 - name: Get role binding for argocd-redis-ha
@@ -129,26 +129,26 @@
     env: "{{item[1]}}"    
   loop: "{{ users|product(['stage', 'prod'])|list }}"
 
-- name: Get existing groups
-  shell: |
-    oc get groups -o name
-  register: results
+# - name: Get existing groups
+#   shell: |
+#     oc get groups -o name
+#   register: results
 
-- name: Create argocd groups
-  shell: |
-    oc adm groups new {{item}}
-  when: item not in results.stdout
-  loop:
-    - argocdadmins
-    - argocdusers
+# - name: Create argocd groups
+#   shell: |
+#     oc adm groups new {{item}}
+#   when: item not in results.stdout
+#   loop:
+#     - argocdadmins
+#     - argocdusers
   
-- name: Add {{ocp_username}} to argocdadmins
-  shell: |
-    oc adm groups add-users argocdadmins {{ocp_username}}
+# - name: Add {{ocp_username}} to argocdadmins
+#   shell: |
+#     oc adm groups add-users argocdadmins {{ocp_username}}
 
-- name: Add user to argocdusers
-  shell: |
-      oc adm groups add-users argocdusers {{user}}
-  loop: "{{users}}"
-  loop_control:
-    loop_var: user
+# - name: Add user to argocdusers
+#   shell: |
+#       oc adm groups add-users argocdusers {{user}}
+#   loop: "{{users}}"
+#   loop_control:
+#     loop_var: user

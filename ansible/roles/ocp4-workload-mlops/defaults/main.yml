@@ -39,6 +39,14 @@ workshop_che_user_password: 'r3dh4t1!'
 workshop_kie_user_name: admin
 workshop_kie_user_password: 'r3dh4t1!'
 
+infra_projects:
+  - labs-infra
+  - labs-kafka
+  - labs-argocd
+  - labs-nexus
+  - labs-dm
+  - labs-setup # Misc temp ns to setup the lab. To be deleted at the end
+
 user_namespaces:
   - dev
   - stage

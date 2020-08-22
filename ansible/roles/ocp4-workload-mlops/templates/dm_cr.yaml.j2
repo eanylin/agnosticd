@@ -15,6 +15,13 @@ spec:
       - id: drl-fraud
         deployments: 1
         replicas: 1
+        resources:
+          requests:
+            cpu: 2
+            memory: 4Gi
+          limits:
+            cpu: 2
+            memory: 4Gi
         build:
           kieServerContainerDeployment: >-
             drl-fraud=com.myspace:drl-fraud:1.0.0-SNAPSHOT

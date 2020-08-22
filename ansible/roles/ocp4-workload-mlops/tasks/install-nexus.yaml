@@ -9,6 +9,15 @@
   command: helm install nexus ltsai/nexus -n labs-nexus --set sonatype-nexus.persistence.storageSize={{((users | length) * 1.5)| round(0, 'ceil') | int}}Gi
   when: "'deployed' not in result.stdout"
 
+- name: Wait for nexus to be ready
+  uri:
+    url: https://nexus-labs-nexus.{{ route_subdomain }}/
+    validate_certs: false
+  register: result
+  until: result.status == 200
+  retries: 50
+  delay: 10
+
 - name: Create docker registry service
   k8s:
     definition:
