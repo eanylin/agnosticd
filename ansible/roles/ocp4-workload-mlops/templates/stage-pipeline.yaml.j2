@@ -69,7 +69,13 @@ spec:
 
     image: registry.redhat.io/ubi8/python-36
     name: train
-    resources: {}
+    resources:
+      requests:
+        cpu: 500m
+        memory: 1Gi                  
+      limits:
+        cpu: 2
+        memory: 2Gi
     env:
     - name: MLFLOW_EXPERIMENT_NAME
       value: Stage
@@ -117,7 +123,13 @@ spec:
       cp -av /workspace/model /gen-source/upload/src/        
     image: registry.redhat.io/ocp-tools-43-tech-preview/source-to-image-rhel8
     name: generate
-    resources: {}
+    resources: 
+      requests:
+        cpu: 500m
+        memory: 1Gi                  
+      limits:
+        cpu: 2
+        memory: 2Gi
     volumeMounts:
     - mountPath: /gen-source
       name: gen-source
@@ -134,7 +146,13 @@ spec:
 
     image: registry.redhat.io/rhel8/buildah
     name: build
-    resources: {}
+    resources:
+      requests:
+        cpu: 500m
+        memory: 2Gi                  
+      limits:
+        cpu: 2
+        memory: 3Gi
     securityContext:
       privileged: true
     volumeMounts:
@@ -156,7 +174,13 @@ spec:
       docker://$IMAGE_URL
     image: registry.redhat.io/rhel8/buildah
     name: push
-    resources: {}
+    resources: 
+      requests:
+        cpu: 500m
+        memory: 1Gi                  
+      limits:
+        cpu: 2
+        memory: 2Gi
     securityContext:
       privileged: true
     volumeMounts:
