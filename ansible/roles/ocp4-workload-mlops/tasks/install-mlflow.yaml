@@ -10,3 +10,16 @@
   loop: "{{ results.results }}"
   loop_control:
     label: "{{item.item}}"
+
+- name: Wait for mlflow to be ready
+  uri:
+    url: https://mlflow-{{item.item}}-dev.{{ route_subdomain }}/
+    validate_certs: false
+  register: result
+  until: result.status == 200
+  retries: 50
+  delay: 10
+  when: "'deployed' not in item.stdout"
+  loop: "{{ results.results }}"
+  loop_control:
+    label: "{{item.item}}"
