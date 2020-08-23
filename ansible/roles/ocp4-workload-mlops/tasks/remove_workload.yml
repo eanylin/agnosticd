@@ -110,6 +110,7 @@
     - labs-kafka
     - labs-nexus    
     - labs-dm
+    - labs-setup
 
   ignore_errors: yes
 
