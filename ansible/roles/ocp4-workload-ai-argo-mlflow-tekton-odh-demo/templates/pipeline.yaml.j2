@@ -1,0 +1,281 @@
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pipeline-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: ocs-storagecluster-cephfs
+  volumeMode: Filesystem
+---
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: model-train-repo
+spec:
+  type: git
+  params:
+  - name: url
+    value: https://github.com/tsailiming/ai-argo-mlflow-tekton-demo.git
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: echo-params
+spec:
+  params:
+  - name: value
+  steps:
+  - name: echo-params
+    image: registry.redhat.io/ubi8/ubi-minimal
+    script: echo "$(params.value)"
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: clean-workspace
+spec:  
+  workspaces:
+    - name: workspace
+      mountPath: /workspace
+  steps:
+  - name: clean
+    image: registry.redhat.io/ubi8/ubi-minimal
+    script: |
+      #!/bin/bash
+      rm -rf /workspace/*
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: s2i-python-3
+spec:
+  resources:
+    inputs:
+    - name: source
+      type: git
+  workspaces:
+    - name: workspace
+      mountPath: /workspace      
+  params:
+  - default: "6"
+    description: The minor version of the python 3
+    name: MINOR_VERSION
+    type: string
+  - default: .
+    description: The location of the path to run s2i from.
+    name: PATH_CONTEXT
+    type: string
+  - default: "true"
+    description: Verify the TLS on the registry endpoint (for push/pull to a non-TLS
+      registry)
+    name: TLSVERIFY
+    type: string
+  steps:
+  - script: |
+      #!/bin/bash
+      s2i build $(params.PATH_CONTEXT) \
+      registry.access.redhat.com/ubi8/python-3$(params.MINOR_VERSION) \
+      --as-dockerfile /gen-source/Dockerfile.gen
+
+      #cp -av /workspace/model /gen-source/upload/src/        
+    image: registry.redhat.io/ocp-tools-43-tech-preview/source-to-image-rhel8
+    name: generate
+    resources: 
+      requests:
+        cpu: 500m
+        memory: 1Gi                  
+      limits:
+        cpu: 2
+        memory: 2Gi
+    volumeMounts:
+    - mountPath: /gen-source
+      name: gen-source
+  - script: | 
+      #/bin/bash
+      
+      #GIT_REV=`cat /workspace/git`
+      #. /workspace/source/src/seldon/config.sh
+      IMAGE_URL=image-registry.openshift-image-registry.svc:5000/{{demo_ns}}/train
+
+      buildah bud --format=docker --tls-verify=$(params.TLSVERIFY) \
+      --layers -f /gen-source/Dockerfile.gen \
+      -t $IMAGE_URL .
+
+    image: registry.redhat.io/rhel8/buildah
+    name: build
+    resources:
+      requests:
+        cpu: 500m
+        memory: 2Gi                  
+      limits:
+        cpu: 2
+        memory: 3Gi
+    securityContext:
+      privileged: true
+    volumeMounts:
+    - mountPath: /var/lib/containers
+      name: varlibcontainers
+    - mountPath: /gen-source
+      name: gen-source
+    workingDir: /gen-source
+  - script: | 
+      #!/bin/bash
+
+      IMAGE_URL=image-registry.openshift-image-registry.svc:5000/{{demo_ns}}/train
+
+      buildah push \
+      --tls-verify=$(params.TLSVERIFY) \
+      $IMAGE_URL \
+      docker://$IMAGE_URL
+    image: registry.redhat.io/rhel8/buildah
+    name: push
+    resources: 
+      requests:
+        cpu: 500m
+        memory: 1Gi                  
+      limits:
+        cpu: 2
+        memory: 2Gi
+    securityContext:
+      privileged: true
+    volumeMounts:
+    - mountPath: /var/lib/containers
+      name: varlibcontainers
+  volumes:
+  - emptyDir: {}
+    name: varlibcontainers
+  - emptyDir: {}
+    name: gen-source
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: argo-workflow-task-submit
+spec:
+  workspaces:
+    - name: workspace
+      mountPath: /workspace   
+  params:
+  - name: SCRIPT
+    description: The OpenShift CLI arguments to run
+    type: string
+    default: "oc $@"
+  - name: ARGS
+    description: The OpenShift CLI arguments to run
+    type: array
+    default:
+    - "help"
+  resources:
+    inputs:
+      - name: source
+        type: git
+        optional: true
+  steps:
+    - name: oc
+      image: quay.io/openshift/origin-cli:latest
+      script: "$(params.SCRIPT)"
+      args:
+        - "$(params.ARGS)"             
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: pipeline
+spec:
+  params:
+  - name: gitref
+    type: string
+    default: default
+  - name: gitrevision
+    type: string
+    default: default
+  - name: gitrepositoryurl
+    type: string
+    default: default
+  - name: contenttype
+    type: string
+    default: default      
+  resources:
+  - name: source
+    type: git
+  workspaces:
+  - name: workspace
+  tasks:
+  - name: clean-workspace
+    workspaces:
+      - name: workspace
+        workspace: workspace
+    taskRef:
+      kind: Task
+      name: clean-workspace
+  - name: echo-gitref
+    taskRef:
+      name: echo-params
+    runAfter:
+      - clean-workspace
+    params:
+      - name: value
+        value: $(params.gitref)
+  - name: echo-gitrevision
+    taskRef:
+      name: echo-params
+    runAfter:
+      - echo-gitref
+    params:
+      - name: value
+        value: $(params.gitrevision)
+  - name: echo-gitrepositoryurl
+    taskRef:
+      name: echo-params
+    runAfter:
+      - echo-gitrevision
+    params:
+      - name: value
+        value: $(params.gitrepositoryurl)
+  - name: echo-contenttype
+    taskRef:
+      name: echo-params
+    runAfter:
+      - echo-gitrepositoryurl
+    params:
+      - name: value
+        value: $(params.contenttype)          
+  - name: build-train-image
+    resources:
+      inputs:
+      - name: source
+        resource: source
+    workspaces:
+      - name: workspace
+        workspace: workspace
+    params:
+    - name: TLSVERIFY
+      value: "false"
+    - name: PATH_CONTEXT
+      value: /workspace/source/src/wine
+    runAfter:
+    - echo-contenttype      
+    taskRef:
+      kind: Task
+      name: s2i-python-3  
+  - name: submit-argo-workflow
+    workspaces:
+      - name: workspace
+        workspace: workspace
+    params:
+    runAfter:
+    - build-train-image
+    taskRef:
+      kind: Task
+      name: argo-workflow-task-submit
+    params:
+      - name: ARGS
+        value:
+          - "create"
+          - "-f"
+          - "/workspace/source/deploy/argo-workflow.yaml"

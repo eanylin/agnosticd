@@ -1,0 +1,51 @@
+---
+- name: Get machinesets for {{aws_az}}
+  shell: |
+    oc get machinesets -n openshift-machine-api -o name | grep {{aws_az}} 
+  register: results
+
+- set_fact:
+    ms_output_file: "{{tmp_dir}}/ms.yaml"
+
+- name: Get machineset info for {{results.stdout}}
+  shell: |
+    oc get {{results.stdout}} -n openshift-machine-api -o yaml > {{ms_output_file}}
+
+- set_fact:
+    old_ms_name: "{{results.stdout.split('/')[1]}}"
+    new_ms_name: "{{results.stdout.split('/')[1]}}-gpu"
+    ms_output_file: "{{tmp_dir}}/ms.yaml"
+
+- name: Remove old keys from machienset
+  yedit:
+    src: "{{ms_output_file}}"
+    key: "{{item}}"
+    state: absent
+  loop:
+    - metadata.selfLink
+    - metadata.resourceVersion
+    - metadata.uid
+    - metadata.creationTimestamp
+    - metadata.generation
+    - metadata.managedFields
+    - metadata.annotations
+    - status
+
+- name: Add GPU instance type {{gpu_instance_type}}
+  yedit:
+    src: "{{ms_output_file}}"
+    key: spec.template.spec.providerSpec.value.instanceType
+    value: "{{gpu_instance_type}}"
+    state: present
+
+- name: Change machineset name
+  replace:
+    path: "{{ms_output_file}}"
+    regexp: "{{old_ms_name}}"
+    replace: "{{new_ms_name}}"
+
+- name: Create machineset 
+  k8s:
+    state: present
+    definition: "{{ lookup('file', ms_output_file) | from_yaml }}"
+

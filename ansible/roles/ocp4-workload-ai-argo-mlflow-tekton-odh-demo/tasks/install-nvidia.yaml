@@ -1,0 +1,55 @@
+---
+- name: Create gpu-operator-resources project
+  k8s:
+    state: present
+    kind: Project
+    api_version: project.openshift.io/v1
+    definition:
+      metadata:
+        name: gpu-operator-resources
+        
+- name: Create Nvidia operator group
+  k8s:
+    state: present
+    definition: "{{ lookup('file', 'files/nvidia_og.yaml' ) | from_yaml }}"
+
+- name: Create Nvidia operator
+  k8s:
+    state: present
+    definition: "{{ lookup('file', 'files/nvidia_subscription.yaml' ) | from_yaml }}"
+
+- name: "Wait for gpu operator to be Succeeded"
+  k8s_info:
+    kind: Pod
+    api_version: v1
+    namespace: gpu-operator-resources
+    label_selectors:
+      - name = gpu-operator  
+    field_selectors:
+      - status.phase=Running  
+  register: result
+  until: result.resources | length == 1
+  retries: 40
+  delay: 10
+
+- name: Create Nvidia Cluster Policy
+  k8s:
+    state: present
+    definition: "{{ lookup('file', 'files/gpu_clusterpolicy_cr.yaml' ) | from_yaml }}"
+
+- name: Wait for nvidia-driver-daemonset to appear
+  k8s_info:
+    kind: DaemonSet
+    api_version: apps/v1
+    name: nvidia-driver-daemonset
+    namespace: gpu-operator-resources    
+  register: result
+  until: result.resources | length == 1
+  retries: 40
+  delay: 10
+
+# Workarond 
+- name: Patch rhcos version
+  k8s:
+    definition: "{{ lookup('template', 'templates/nvidia-driver-daemonset.yaml.j2') | from_yaml }}"  
+                

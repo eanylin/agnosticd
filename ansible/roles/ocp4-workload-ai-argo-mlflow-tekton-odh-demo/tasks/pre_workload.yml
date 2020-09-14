@@ -1,0 +1,156 @@
+---
+# Implement your Pre Workload deployment tasks here
+
+# Figure out paths
+- name: extract api_url
+  shell: oc whoami --show-server
+  register: api_url_r
+
+- name: set the master
+  set_fact:
+    master_url: "{{ api_url_r.stdout | trim }}"
+
+- name: extract console_url
+  command: oc whoami --show-console
+  register: console_url_r
+
+- name: set the console
+  set_fact:
+    console_url: "{{ console_url_r.stdout | trim }}"
+
+- name: extract route_subdomain
+  k8s_facts:
+    kind: Ingress
+  register: route_subdomain_r
+
+- name: set the route
+  set_fact:
+    route_subdomain: "{{ route_subdomain_r.resources[0].spec.domain | trim }}"
+
+# - name: set bastion_fqdn
+#   set_fact:
+#     bastion_fqdn: "{{ subdomain_base }}"
+
+- name: Get the number of worker nodes
+  k8s_info:
+    kind: Node
+    api_version: v1
+    label_selectors:
+      - node-role.kubernetes.io/worker          
+  register: nodes
+  
+- fail:
+    msg: OCS 4 requires a min of 3 workers 
+  when: nodes.resources | length < 3
+
+- name: Set num of worker nodes fact
+  set_fact:
+    num_worker_nodes: "{{nodes.resources | length}}"
+
+- fail: 
+    msg: The variable 'pem_file' is not defined
+  when: pem_file | length == 0
+
+- name: Enable entitlement for the cluster for Nvidia GPU Operator
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'templates/0003-cluster-wide-machineconfigs.yaml.j2') | from_yaml_all | list }}"
+
+- name: Wait until worker mcp is updated to all nodes
+  k8s_facts:
+    api_version: machineconfiguration.openshift.io/v1
+    kind: MachineConfigPool
+    name: worker
+  register: mcp
+  retries: 200
+  delay: 10
+  until: mcp.resources[0].status.updatedMachineCount == (num_worker_nodes | int)
+
+- name: debug values
+  debug:
+    msg:
+    - "master URL: {{ master_url }}"
+    - "console URL: {{ console_url }}"
+    - "route subdomain: {{ route_subdomain }}"
+    - "ocp_username: {{ ocp_username }}"
+    - "num_worker_nodes: {{ num_worker_nodes }}"
+
+- name: Check whether binary exists
+  include_tasks: check-binary-exists.yaml
+  loop: "{{binaries}}"    
+  loop_control:
+    loop_var: binary
+
+- name: Add helm chart repo
+  command: helm repo add ltsai https://tsailiming.github.io/helm-charts/
+
+- name: Update helm repo
+  command: helm repo update 
+
+- name: Configure OpenShift Container Storage 4
+  include_role: 
+    name: ocp4-workload-ceph
+  vars:
+    ceph_storage_requests: 100Gi
+    set_cephfs_default_sc: true
+    ocs_version: 4.4.2
+    ocs_operator_channel: stable-4.4
+    ceph_osd:
+      resources:
+        requests:
+          cpu: 0.5
+          memory: 1Gi
+    ceph_mon:
+      resources:
+        requests:
+          cpu: 0.5
+          memory: 1Gi
+    ceph_mgr:
+      resources:
+        requests:
+          cpu: 0.5
+          memory: 1Gi
+    ceph_mds:
+      resources:
+        requests:
+          cpu: 0.5
+          memory: 1Gi
+    noobaa_core:
+      resources:
+        requests:
+          cpu: 0.5
+          memory: 1Gi
+    noobaa_db:
+      resources:
+        requests:
+          cpu: 0.5
+          memory: 1Gi
+    noobaa_endpoint:
+      resources:
+        requests:
+          cpu: 0.5
+          memory: 1Gi
+  
+- name: Add additional catalog source
+  k8s:
+    state: present
+    definition: "{{ lookup('file', item ) | from_yaml }}"
+  loop:
+    - ./files/grafana_catalogsource.yaml
+    - ./files/prom_catalogsource.yaml
+
+- name: Remove tmp dir
+  file:
+    path: "{{ tmp_dir }}"
+    state: absent
+
+- name: Create tmp dir
+  file:
+    path: "{{ tmp_dir }}"
+    state: directory
+
+# Leave this as the last task in the playbook.
+- name: pre_workload tasks complete
+  debug:
+    msg: "Pre-Workload tasks completed successfully."
+  when: not silent|bool

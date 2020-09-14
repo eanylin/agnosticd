@@ -1,0 +1,54 @@
+---
+# Implement your Workload deployment tasks here
+
+- name: Setting up workload for user
+  debug:
+    msg: "Setting up workload for user ocp_username = {{ ocp_username }}"
+
+- name: Give access to opentlc-mgr
+  shell: |
+         oc adm policy add-cluster-role-to-user cluster-admin {{ ocp_username }}
+
+- name: Create gpu machineset
+  include_tasks: create-machineset-gpu.yaml
+
+- name: Setup Nvidia GPU Operator
+  include_tasks: install-nvidia.yaml
+
+- name: create odh-demo
+  k8s:
+    state: present
+    kind: Project
+    api_version: project.openshift.io/v1
+    definition:
+      metadata:
+        name: "{{demo_ns}}"
+        
+- name: Install mlflow
+  include_tasks: install-mlflow.yaml
+  
+- name: install global operators
+  include_tasks: install-global-operators.yaml
+
+- name: Setup ODH
+  include_tasks: install-odh.yaml
+
+# - name: install monitoring
+#   include_tasks: install-mon.yaml
+
+- name: create pipeline in {{demo_ns}}
+  include_tasks: install-pipelines.yaml
+  vars:
+    ns: "{{demo_ns}}"
+
+- name: Create seldon-init-container-secret for Seldon serving
+  include_tasks: create-seldon-secret.yaml
+
+- name: Create mnist web app
+  include_tasks: install-mnist-web.yaml
+
+# Leave this as the last task in the playbook.
+- name: workload tasks complete
+  debug:
+    msg: "Workload Tasks completed successfully."
+  when: not silent|bool

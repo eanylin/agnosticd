@@ -1,0 +1,59 @@
+apiVersion: kfdef.apps.kubeflow.org/v1
+kind: KfDef
+metadata:
+  name: {{demo_ns}}
+  namespace: {{demo_ns}}
+spec:
+  applications:
+  - kustomizeConfig:
+      parameters:
+        - name: s3_endpoint_url
+          value: s3.odh.com
+      repoRef:
+        name: manifests
+        path: jupyterhub/jupyterhub
+    name: jupyterhub
+  - kustomizeConfig:
+      overlays:
+        - additional
+        - cuda
+      repoRef:
+        name: manifests
+        path: jupyterhub/notebook-images
+    name: notebook-images
+  - kustomizeConfig:
+      repoRef:
+        name: manifests
+        path: odhargo/cluster
+    name: odhargo-cluster
+  - kustomizeConfig:
+      repoRef:
+        name: manifests
+        path: odhargo/odhargo
+    name: odhargo
+  - kustomizeConfig:
+      overlays:
+      repoRef:
+        name: kf-manifests
+        path: pytorch-job/pytorch-job-crds
+    name: pytorch-job-crds
+  - kustomizeConfig:
+      repoRef:
+        name: kf-manifests
+        path: pytorch-job/pytorch-operator
+    name: pytorch-operator
+  - kustomizeConfig:
+      repoRef:
+        name: kf-manifests
+        path: tf-training/tf-job-crds
+    name: tf-job-crds
+  - kustomizeConfig:
+      repoRef:
+        name: kf-manifests
+        path: tf-training/tf-job-operator
+    name: tf-job-operator
+  repos:
+  - name: kf-manifests
+    uri: https://github.com/opendatahub-io/manifests/tarball/v1.0-branch-openshift
+  - name: manifests
+    uri: 'https://github.com/opendatahub-io/odh-manifests/tarball/v0.8.0'

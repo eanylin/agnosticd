@@ -1,0 +1,12 @@
+---
+kind: DaemonSet
+apiVersion: apps/v1
+metadata:
+  name: nvidia-driver-daemonset
+  namespace: gpu-operator-resources    
+spec:    
+  template:
+    spec:  
+      containers:
+        - name: nvidia-driver-ctr          
+          image: "{{nvidia_driver_image}}"

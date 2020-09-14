@@ -1,0 +1,4 @@
+---
+# vars file for ocp4-workload-ai-argo-mlflow-tekton-demo
+
+demo_ns: odh-demo

@@ -1,0 +1,57 @@
+---
+- name: Get all pipeline runs in {{ns}}
+  k8s_facts:
+    api_version: tekton.dev/v1alpha1
+    kind: PipelineRun
+    namespace: "{{ns}}"
+    label_selectors:
+      tekton.dev/pipeline = pipeline
+  register: result
+
+- name: Delete pipeline runs in {{ns}} 
+  k8s:
+    api_version: tekton.dev/v1alpha1
+    kind: PipelineRun
+    namespace: "{{ns}}"
+    state: absent
+    name: "{{resource.metadata.name}}"
+  loop: "{{result.resources}}"
+  loop_control:
+    loop_var: resource
+    label: "{{resource.metadata.name}}"
+    
+# Wipe out to ensure a clean one is loaded
+- name: Delete tekton pipeline in {{ns}}
+  k8s:
+    state: absent
+    namespace: "{{ns}}"
+    definition: "{{ lookup('template', 'templates/pipeline.yaml.j2') | from_yaml_all | list }}"
+
+- name: Create tekton pipeline in {{ns}}
+  k8s:
+    state: present
+    namespace: "{{ns}}"
+    definition: "{{ lookup('template', 'templates/pipeline.yaml.j2') | from_yaml_all | list }}"
+
+#Wipe out to ensure a clean one is loaded
+- name: Delete tekton trigger in {{ns}}
+  k8s:
+    state: absent
+    namespace: "{{ns}}"
+    definition: "{{ lookup('template', 'templates/tektontriggers.yaml.j2') | from_yaml_all | list }}"
+
+- name: Create tekton trigger in {{ns}}
+  k8s:
+    state: present
+    namespace: "{{ns}}"
+    definition: "{{ lookup('template', 'templates/tektontriggers.yaml.j2') | from_yaml_all | list }}"
+
+- name: Create rolebindings for pipeline SA for argo workflow in {{ns}}
+  k8s:
+    state: present
+    namespace: "{{ns}}"
+    definition: "{{ lookup('template', 'templates/{{item}}') | from_yaml_all | list }}"
+  loop:
+    - workflow-edit-role.yaml.j2
+    - pipeline-workflow-edit-rolebinding.yaml.j2
+

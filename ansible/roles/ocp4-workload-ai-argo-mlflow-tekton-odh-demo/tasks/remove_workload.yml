@@ -1,0 +1,86 @@
+---
+# Implement your Workload deployment tasks here
+
+- name: Setting up workload for user
+  debug:
+    msg: "Setting up workload for user ocp_username = {{ ocp_username }}"
+
+- set_fact:
+    query: "results[].resources[].{name: metadata.name, namespace: metadata.namespace}"
+    operators_namespace: 
+      - openshift-operators
+      - "{{demo_ns}}"
+      - gpu-operator-resources
+
+- name: Get kfdef
+  k8s_info:
+    api_version: kfdef.apps.kubeflow.org/v1
+    kind: KfDef
+    namespace: "{{item}}"
+  register: kfdefs
+  loop: "{{operators_namespace}}"
+
+- name: Delete kfdefs
+  k8s:
+    api_version: kfdef.apps.kubeflow.org/v1
+    kind: KfDef
+    name: "{{item.name}}"        
+    namespace: "{{item.namespace}}"
+    state: absent
+  loop: "{{kfdefs | json_query(query)}}"
+  loop_control:
+    label: "{'name': {{item.name}},'namespace': {{item.namespace}}}"
+
+- name: Get operator subscription
+  k8s_info:
+    api_version: operators.coreos.com/v1alpha1
+    kind: Subscription
+    namespace: "{{item}}"
+  register: operators_subs
+  loop: "{{operators_namespace}}"
+
+- name: Delete operator subscription
+  k8s:
+    api_version: operators.coreos.com/v1alpha1
+    kind: Subscription
+    name: "{{item.name}}"        
+    namespace: "{{item.namespace}}"
+    state: absent
+  loop: "{{operators_subs | json_query(query)}}"
+  loop_control:
+    label: "{'name': {{item.name}},'namespace': {{item.namespace}}}"
+
+- name: Get operator csv
+  k8s_info:
+    api_version: operators.coreos.com/v1alpha1
+    kind: ClusterServiceVersion
+    namespace: "{{item}}"
+  register: operators_csv
+  loop: "{{operators_namespace}}"
+
+- name: Delete operator csv
+  k8s:
+    api_version: operators.coreos.com/v1alpha1
+    kind: ClusterServiceVersion
+    name: "{{item.name}}"        
+    namespace: "{{item.namespace}}"
+    state: absent
+  loop: "{{operators_csv | json_query(query)}}"
+  loop_control:
+    label: "{'name': {{item.name}},'namespace': {{item.namespace}}}"
+
+- name: remove namespace
+  shell: >
+    oc delete project {{item}}
+  loop:
+    - "{{demo_ns}}"
+    - gpu-operator-resources
+  ignore_errors: yes
+
+# Not deleting OCS4
+
+# Leave this as the last task in the playbook.
+- name: Remove workload tasks complete
+  debug:
+    msg: "Remove Workload Tasks completed successfully."
+  when: not silent|bool

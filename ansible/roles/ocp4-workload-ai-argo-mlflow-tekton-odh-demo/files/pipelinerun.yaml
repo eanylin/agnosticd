@@ -1,0 +1,15 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: pipeline-run-
+spec:
+  pipelineRef:
+    name: pipeline
+  resources:
+  - name: source
+    resourceRef:
+      name: model-train-repo
+  workspaces:
+  - name: workspace
+    persistentVolumeClaim:
+      claimName: pipeline-pvc
