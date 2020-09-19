@@ -70,3 +70,5 @@ images_to_seed:
     uri: quay.io/ltsai/rh-mlops-workshop-notebook:3.6
 
 consumer_app_image: quay.io/kwkoo/kafka-consumer:latest
+
+odh_operator_ver: opendatahub-operator.v0.8.0
