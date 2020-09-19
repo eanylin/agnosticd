@@ -4,21 +4,6 @@
     state: present    
     definition: "{{ lookup('template', 'templates/kfctl_odh_demo.yaml.j2' ) | from_yaml }}"
 
-- name: Wait for jupyterhub web pod to be Running
-  k8s_info:
-    kind: Pod
-    api_version: v1
-    namespace: "{{demo_ns}}"
-    label_selectors:
-      - app = jupyterhub
-      - component = web
-    field_selectors:
-      - status.phase=Running
-  register: jupyterhub_pod
-  until: jupyterhub_pod.resources | length == 1
-  retries: 40
-  delay: 10
-
 - name: Wait for s2i-minimal-notebook-gpu is to be ready
   k8s_info:
     name: s2i-minimal-notebook-gpu
@@ -41,6 +26,21 @@
         namespace: "{{demo_ns}}"
         labels:
           opendatahub.io/notebook-image: 'true'
+
+- name: Wait for jupyterhub web pod to be Running
+  k8s_info:
+    kind: Pod
+    api_version: v1
+    namespace: "{{demo_ns}}"
+    label_selectors:
+      - app = jupyterhub
+      - component = web
+    field_selectors:
+      - status.phase=Running
+  register: jupyterhub_pod
+  until: jupyterhub_pod.resources | length == 1
+  retries: 40
+  delay: 10
 
 - name: Kill for jupyterhub web pod so it will restart to pick up the s2i-minimal-notebook-gpu notebook image
   k8s:

@@ -9,12 +9,6 @@
   shell: |
          oc adm policy add-cluster-role-to-user cluster-admin {{ ocp_username }}
 
-- name: Create gpu machineset
-  include_tasks: create-machineset-gpu.yaml
-
-- name: Setup Nvidia GPU Operator
-  include_tasks: install-nvidia.yaml
-
 - name: create odh-demo
   k8s:
     state: present
@@ -29,6 +23,12 @@
   
 - name: install global operators
   include_tasks: install-global-operators.yaml
+
+- name: Setup Nvidia GPU Operator
+  include_tasks: install-nvidia.yaml
+
+- name: Create gpu machineset
+  include_tasks: create-machineset-gpu.yaml
 
 - name: Setup ODH
   include_tasks: install-odh.yaml

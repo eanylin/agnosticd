@@ -2,6 +2,6 @@ apiVersion: nfd.openshift.io/v1alpha1
 kind: NodeFeatureDiscovery
 metadata:
   name: nfd-master-server
-  namespace: openshift-operators
+  namespace: gpu-operator-resources
 spec:
   namespace: openshift-nfd

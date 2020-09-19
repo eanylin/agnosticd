@@ -18,6 +18,39 @@
     state: present
     definition: "{{ lookup('file', 'files/nvidia_subscription.yaml' ) | from_yaml }}"
 
+- name: "Wait for nfd operator to be Succeeded"
+  k8s_info:
+    kind: Pod
+    api_version: v1
+    namespace: gpu-operator-resources
+    label_selectors:
+      - name = nfd-operator    
+    field_selectors:
+      - status.phase=Running  
+  register: result
+  until: result.resources | length == 1
+  retries: 40
+  delay: 10
+    
+- name: Create NFD Custom Resource
+  k8s:
+    state: present
+    definition: "{{ lookup('file', 'files/nfd_cr.yaml' ) | from_yaml }}"
+
+- name: "Wait for nfd workers to be running"
+  k8s_info:
+    kind: Pod
+    api_version: v1
+    namespace: gpu-operator-resources
+    label_selectors:
+      - app = nfd-worker
+    field_selectors:
+      - status.phase=Running
+  register: result
+  until: result.resources | length == (num_worker_nodes | int)
+  retries: 40
+  delay: 10
+
 - name: "Wait for gpu operator to be Succeeded"
   k8s_info:
     kind: Pod
@@ -36,20 +69,3 @@
   k8s:
     state: present
     definition: "{{ lookup('file', 'files/gpu_clusterpolicy_cr.yaml' ) | from_yaml }}"
-
-- name: Wait for nvidia-driver-daemonset to appear
-  k8s_info:
-    kind: DaemonSet
-    api_version: apps/v1
-    name: nvidia-driver-daemonset
-    namespace: gpu-operator-resources    
-  register: result
-  until: result.resources | length == 1
-  retries: 40
-  delay: 10
-
-# Workarond 
-- name: Patch rhcos version
-  k8s:
-    definition: "{{ lookup('template', 'templates/nvidia-driver-daemonset.yaml.j2') | from_yaml }}"  
-                

@@ -1,7 +1,7 @@
 ---
 - name: Get machinesets for {{aws_az}}
   shell: |
-    oc get machinesets -n openshift-machine-api -o name | grep {{aws_az}} 
+    oc get machinesets -n openshift-machine-api -o name | grep {{aws_az}}$
   register: results
 
 - set_fact:
@@ -49,3 +49,22 @@
     state: present
     definition: "{{ lookup('file', ms_output_file) | from_yaml }}"
 
+- name: Wait for nvidia-driver-daemonset to appear
+  k8s_info:
+    kind: DaemonSet
+    api_version: apps/v1
+    name: nvidia-driver-daemonset
+    namespace: gpu-operator-resources    
+  register: result
+  until: result.resources | length == 1
+  retries: 40
+  delay: 10
+
+# Workarond 
+- name: Patch rhcos version
+  k8s:
+    definition: "{{ lookup('template', 'templates/nvidia-driver-daemonset.yaml.j2') | from_yaml }}"  
+                
+
+# There is some race condition
+# Need to terminate nvidia-device-plugin-daemonset pod because the NVML library not loaded by then.
