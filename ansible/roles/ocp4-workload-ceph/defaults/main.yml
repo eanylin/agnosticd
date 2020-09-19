@@ -34,6 +34,11 @@ noobaa_db:
     requests:
       cpu: '0.2'
       memory: 2Gi
+noobaa_endpoint:
+  resources:
+    requests:
+      cpu: '0.2'
+      memory: 2Gi
 ocs_version: 4.3
 ocs_operator_channel: "stable-{{ocs_version}}"
 ceph_storage_requests: 100Gi
