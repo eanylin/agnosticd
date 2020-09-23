@@ -6,7 +6,7 @@ silent: False
 guid: 1002
 tmp_dir: /tmp/{{ guid }}
 
-nvidia_driver_image: nvidia/driver:440.64.00-rhcos4.4
+#nvidia_driver_image: nvidia/driver:440.64.00-rhcos4.4
 aws_az: ap-southeast-1a
 gpu_instance_type: p3.2xlarge
 
