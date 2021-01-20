@@ -16,16 +16,23 @@ spec:
       generateName: pipeline-run-
     spec:
       workspaces:
-        - name: workspace 
-          persistentVolumeClaim:
-            claimName: stage-pipeline-pvc
+        - name: workspace
+          volumeClaimTemplate:
+            spec:
+              accessModes:
+                - ReadWriteMany
+              resources:
+                requests:
+                  storage: 1Gi
+              storageClassName: ocs-storagecluster-cephfs
+              volumeMode: Filesystem
       resources:
         - name: source
           resourceSpec:
             type: git
             params:
               - name: revision
-                value: $(params.gitrevision)
+                value: $(tt.params.gitrevision)
               - name: url
                 value:  https://{{ user }}:{{ gogs_pwd }}@gogs-labs-infra.{{ route_subdomain }}/{{ user }}/{{ repository.name }}.git
       serviceAccountName: pipeline
@@ -33,13 +40,13 @@ spec:
         name: pipeline
       params:
       - name: gitref
-        value: $(params.gitref)
+        value: $(tt.params.gitref)
       - name: gitrevision
-        value: $(params.gitrevision)
+        value: $(tt.params.gitrevision)
       - name: gitrepositoryurl
-        value: $(params.gitrepositoryurl)
+        value: $(tt.params.gitrepositoryurl)
       - name: contenttype
-        value: $(params.contenttype)
+        value: $(tt.params.contenttype)
 ---
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: EventListener
@@ -50,8 +57,11 @@ spec:
   triggers:
   - template:
       name: pipeline
+    interceptors:
+      - cel:
+          filter: body.ref == "refs/heads/stage"
     bindings:
-      - name: pipeline
+      - ref: pipeline
 ---
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerBinding
