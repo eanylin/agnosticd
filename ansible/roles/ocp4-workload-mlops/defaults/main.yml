@@ -21,7 +21,7 @@ user_source_repo_name: rh-mlops-workshop
 repositories:
   - base: https://github.com/tsailiming/
     name: "{{user_source_repo_name}}"
-    webhook: http://gogsfilter.labs-infra.svc.cluster.local:8080
+    webhook: http://el-pipeline.{{ user }}-stage.svc.cluster.local:8080
   - base: https://github.com/tsailiming/
     name: "{{user_deploy_repo_name}}"
     webhook: http://argocd-server.labs-argocd.svc.cluster.local:80/api/webhook 
