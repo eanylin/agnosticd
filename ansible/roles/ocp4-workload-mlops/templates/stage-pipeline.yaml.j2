@@ -1,17 +1,4 @@
 ---
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: stage-pipeline-pvc
-spec:
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 1Gi
-  storageClassName: ocs-storagecluster-cephfs
-  volumeMode: Filesystem
----
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
