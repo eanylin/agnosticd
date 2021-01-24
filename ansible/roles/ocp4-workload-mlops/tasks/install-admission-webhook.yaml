@@ -33,21 +33,21 @@
   command: "oc new-app -n labs-infra --docker-image=quay.io/kwkoo/pipelinerestrictor --name=pipelinerestrictor"
 
 - name: Set volume for certificates
-  command: "oc set volumes dc/pipelinerestrictor --add -t secret --secret-name=pipelinerestrictor -m /certificates -n labs-infra"
+  command: "oc set volumes deploy/pipelinerestrictor --add -t secret --secret-name=pipelinerestrictor -m /certificates -n labs-infra"
 
 - name: Create service
-  command: "oc expose dc/pipelinerestrictor --port=443 --target-port=8443 -n labs-infra"
+  command: "oc expose deploy/pipelinerestrictor --port=443 --target-port=8443 -n labs-infra"
 
 - name: Annotate service for certificate generation
   command: "oc annotate svc/pipelinerestrictor -n labs-infra service.beta.openshift.io/serving-cert-secret-name=pipelinerestrictor"
 
 - name: Configure health and readiness probes
-  command: "oc set probe dc/pipelinerestrictor -n labs-infra --readiness --liveness --initial-delay-seconds=10 --get-url=https://:8443/healthz"
+  command: "oc set probe deploy/pipelinerestrictor -n labs-infra --readiness --liveness --initial-delay-seconds=10 --get-url=https://:8443/healthz"
 
 - name: Wait until webhook is ready
   k8s_info:
-    api_version: apps.openshift.io/v1
-    kind: DeploymentConfig
+    api_version: apps/v1
+    kind: Deployment
     name: pipelinerestrictor
     namespace: labs-infra
   register: r_webhook_dc
