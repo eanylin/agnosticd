@@ -6,8 +6,8 @@ metadata:
   namespace: labs-dm
 spec:
   channel: stable
-  installPlanApproval: Automatic
+  installPlanApproval: Manual
   name: businessautomation-operator
   source: redhat-operators
   sourceNamespace: openshift-marketplace
-  #startingCSV: businessautomation-operator.1.4.1
+  startingCSV: businessautomation-operator.7.9.1-1
