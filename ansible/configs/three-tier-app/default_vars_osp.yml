@@ -3,7 +3,7 @@
 ### OSP Environment variables
 ################################################################################
 
-cloud_provider: osp                               
+cloud_provider: osp
 ansible_user: cloud-user
 remote_user: cloud-user
 
@@ -12,10 +12,10 @@ use_dynamic_dns: true
 osp_project_create: true
 
 # Default instance type
-__instance_type: 2c2g30d 
+__instance_type: 2c2g30d
 
 # Default Image
-__image: rhel-server-7.7-update-2  
+__image: rhel-server-7.7-update-2
 
 security_groups:
   - name: FrontendSG
@@ -26,6 +26,23 @@ security_groups:
         to_port: 80
         protocol: tcp
         cidr: "0.0.0.0/0"
+        rule_type: Ingress
+
+  - name: HostSG
+    rules:
+      - name: FromFrontendTCP
+        description: "Allow everything from Frontend"
+        from_port: 1
+        to_port: 65535
+        protocol: tcp
+        from_group: FrontendSG
+        rule_type: Ingress
+      - name: FromFrontendUDP
+        description: "Allow everything from Frontend"
+        from_port: 1
+        to_port: 65535
+        protocol: udp
+        from_group: FrontendSG
         rule_type: Ingress
 
 # Environment Instances
@@ -83,6 +100,7 @@ instances:
         value: "{{ env_type }}-{{ email }}"
     key_name: "{{key_name}}"
     security_groups:
+      - HostSG
       - DefaultSG
 
   - name: "appdb"
@@ -90,7 +108,7 @@ instances:
     public_dns: false
     image_id: "{{ appdb_instance_image | default(__image) }}"
     flavor:
-       osp: "{{ appdb_instance_type | default(__instance_type) }}"
+      osp: "{{ appdb_instance_type | default(__instance_type) }}"
     tags:
       - key: "AnsibleGroup"
         value: "appdbs"
@@ -100,6 +118,7 @@ instances:
         value: "{{ env_type }}-{{ email }}"
     key_name: "{{key_name}}"
     security_groups:
+      - HostSG
       - DefaultSG
 
 

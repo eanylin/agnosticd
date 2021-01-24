@@ -67,9 +67,15 @@
       with_items:
         - 'rhel-7-server-rhvh-4-rpms'
 
+- name: Lock RHEL release
+  hosts: bastions
+  become: true
+  gather_facts: False
+  tasks:
+    - command: subscription-manager release --set=8.1
+
 - name: Configure Bastion Common Files
-  hosts:
-    - bastions
+  hosts: bastions
   become: true
   gather_facts: False
   roles:
@@ -207,10 +213,10 @@
         dest: "/usr/local/src/rhvm_answers.ini"
         force: yes
 
-    - name: Create a xfs filesystem on /dev/vdc
+    - name: Create a xfs filesystem on /dev/{{ rhvm_data_device }}
       filesystem:
         fstype: xfs
-        dev: /dev/vdc
+        dev: "/dev/{{ rhvm_data_device }}"
 
     - name: Ensure RHV Data NFS directory exists
       file:
@@ -225,14 +231,14 @@
     - name: Mount up device by UUID
       mount:
         path: /rhv_data
-        src: /dev/vdc
+        src: "/dev/{{ rhvm_data_device }}"
         fstype: xfs
         state: mounted
 
     - name: Mount up device by UUID
       mount:
         path: /rhv_img
-        src: /dev/vdb
+        src: "/dev/{{ rhvm_image_device }}"
         fstype: xfs
         state: mounted
     
@@ -287,7 +293,7 @@
     - name: Mount up device by UUID
       mount:
         path: /nfs
-        src: /dev/vdb
+        src: "/dev/{{ bastion_extra_device }}"
         fstype: xfs
         state: present
 

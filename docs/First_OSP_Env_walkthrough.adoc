@@ -21,12 +21,12 @@ NOTE: on Fedora `dnf install python3-openstacksdk python3-openstackclient python
 
 
 . Please make sure the file `/etc/ansible/hosts` doesn't exist or is empty, otherwise this default inventory file will cause problems later.
-. Install `virtualenv` and `pip3` (On your laptop or on the clientVM):
+. Install Python 3, gcc, and python package managemend and development libraries (On your laptop or on the clientVM):
 +
 [source, shell]
 ----
 # on Linux
-$ sudo yum install python3-pip python-virtualenv -y
+$ sudo yum install gcc python3 python3-devel python3-libs python3-pip -y
 # on Mac
 $ brew install python pyenv-virtualenv
 ----
@@ -36,20 +36,20 @@ $ brew install python pyenv-virtualenv
 +
 [source, shell]
 ----
-$ virtualenv openstack-ansible-2.9
+$ python3 -m venv ansible2.9-python3.6
 
 ##In Mac
-$ pyenv virtualenv openstack-ansible-2.9
+$ pyenv virtualenv ansible2.9-python3.6
 
 
 ## In Mac, if you find the error " the error: error: pyenv: pip: command not found]", it could because you need pip3, in that case please do:
 $ alias pip=pip3
 $ pip install --upgrade pip
 
-$ source openstack-ansible-2.9/bin/activate
+$ source ansible2.9-python3.6/bin/activate
 
 ## In Mac
-$ source /Users/[USER]/.pyenv/versions/openstack-ansible-2.9/bin/activate
+$ source /Users/[USER]/.pyenv/versions/ansible2.9-python3.6/bin/activate
 
 ## ^replace [USER] with your username or the proper path
 
@@ -61,23 +61,12 @@ $ source /Users/[USER]/.pyenv/versions/openstack-ansible-2.9/bin/activate
 ----
 $ pip3 install -r https://raw.githubusercontent.com/redhat-cop/agnosticd/development/ansible/configs/ocp4-disconnected-osp-lab/files/macos_requirements.txt
 ----
-*** On Linux with Python 2
+*** On Linux
 +
 [source,shell]
 ----
-(openstack-ansible-2.9) $ pip install -r https://raw.githubusercontent.com/redhat-cop/agnosticd/development/tools/virtualenvs/openstack-ansible-2.9-python2.txt
+(ansible2.9-python3.6) $ pip3 install -r https://raw.githubusercontent.com/redhat-cop/agnosticd/development/tools/virtualenvs/ansible2.9-python3.6.txt
 ----
-*** On Linux with python 3:
-+
-[source,shell]
-----
-(openstack-ansible-2.9) $ pip install -r https://raw.githubusercontent.com/redhat-cop/agnosticd/development/tools/virtualenvs/openstack-ansible-2.9-python3.txt
-----
-*** Multi-platform, latest modules (should work for all with both python2 and python3)
-+
-[source,shell]
-----
-(openstack-ansible-2.9) $ pip install -r https://raw.githubusercontent.com/redhat-cop/agnosticd/development/tools/virtualenvs/openstack-ansible-latest.txt
 ----
 
 ----
@@ -184,7 +173,7 @@ EOF
 ----
 
 NOTE: You can find a secret.yml file provided to you on the home directory of your user at your bastion machine, use this to populate the file as previously stated.
-+
+
 [source,bash]
 ----
 [YOUR_USER@bastion ~]$ ls
@@ -253,7 +242,7 @@ YOUR-OPENTLC-USER@bastion.GUID.red.osp.opentlc.com's password: YOUR_EMAIL_PROVID
 You can see there are some machines there and their IP addresses. Now you can log into your bastion machine from the outside world (your laptop) or from the bastion machine you were given credentials for in the email.
 
 Let's log in from the outside world (your laptop) using your ${GUID}_infra_ssh_key.pem key file. Please note that the key file should be created in the machine you launched the playbook from.
-+
+
 [source,bash]
 ----
 sassenach:~ Cibeles$ ll /tmp/output_dir/
@@ -270,6 +259,16 @@ sassenach:~ Cibeles$ ll /tmp/output_dir/
 sassenach:~ Cibeles$ ssh -i /tmp/output_dir/testamaya_infra_ssh_key.pem cloud-user@169.47.188.156
 Last login: Thu May 28 10:49:27 2020 from 90.77.177.210
 [cloud-user@bastion 0 ~]$
+----
+
+. Now, if you want to log into any of your nodes, you just simply need to copy the identity file into the newly deployed bastion machine and ssh from it (as nodes do not have an external IP).
++
+[source,bash]
+----
+sassenach:~ Cibeles$  scp -i /tmp/output_dir/testamaya_infra_ssh_key.pem /tmp/output_dir/testamaya_infra_ssh_key.pem cloud-user@169.47.188.156:.
+
+[cloud-user@bastion ~]$ ssh -i testamaya_infra_ssh_key.pem cloud-user@node
+Last login: Tue Jun  2 12:16:17 2020 from bastion.example.com
 ----
 
 . You can now adapt `my_vars.yml` to your needs. Create different kind of instances, more security groups, etc.

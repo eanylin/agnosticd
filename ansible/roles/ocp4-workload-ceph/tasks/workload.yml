@@ -9,17 +9,6 @@
     state: present
     definition: "{{ lookup('template', 'subscription.yml.j2') }}"
 
-- name: "Wait for OCS Operator to be Succeeded"
-  k8s_facts:
-    kind: ClusterServiceVersion
-    api_version: operators.coreos.com/v1alpha1
-    name: "ocs-operator.v{{ocs_version}}"
-    namespace: "{{ ceph_namespace }}"
-  register: storagecluster
-  until: storagecluster | json_query("resources[0].status.phase=='Succeeded'")
-  retries: 40
-  delay: 10
-
 - name: "Wait for Ceph CRD's to exist"
   k8s_facts:
     api_version: "apiextensions.k8s.io/v1beta1"
@@ -28,53 +17,13 @@
   loop: "{{ ceph_expected_crds }}"
   register: crds
   until: crds.resources|length > 0
-  retries: 40
-  delay: 10 
+  retries: 30
+  delay: 10
 
 - name: "Create StorageCluster"
   k8s:
     state: present
     definition: "{{ lookup('template', 'storagecluster.yml.j2') }}"
-
-- name: "Wait for OCS CR instannces to be Ready"
-  k8s_facts:
-    api_version: "{{item.api_version}}"
-    kind: "{{item.kind}}"
-    name: "{{item.name}}"
-    namespace: "{{ ceph_namespace }}"
-  register: out
-  until: out | json_query("resources[0].status.phase=='Ready'")
-  retries: 60
-  delay: 10
-  loop:
-    - {api_version: 'noobaa.io/v1alpha1', kind: 'NooBaa', name: 'noobaa'} 
-    - {api_version: 'noobaa.io/v1alpha1', kind: 'BackingStore', name: 'noobaa-default-backing-store'} 
-    - {api_version: 'noobaa.io/v1alpha1', kind: 'BucketClass', name: 'noobaa-default-bucket-class'}     
-    - {api_version: 'ocs.openshift.io/v1', kind: 'StorageCluster', name: 'ocs-storagecluster'} 
-    - {api_version: 'ceph.rook.io/v1', kind: 'CephBlockPool', name: 'ocs-storagecluster-cephblockpool'} 
-    - {api_version: 'ocs.openshift.io/v1', kind: 'OCSInitialization', name: 'ocsinit'} 
-
-- name: Set CephFS as default storage class
-  k8s:
-    definition:
-      kind: StorageClass
-      apiVersion: storage.k8s.io/v1
-      metadata:
-        name: gp2
-        annotations:
-          storageclass.kubernetes.io/is-default-class: 'false'
-  when: set_cephfs_default_sc
-
-- name: Set CephFS as default storage class
-  k8s:
-    definition:
-      kind: StorageClass
-      apiVersion: storage.k8s.io/v1
-      metadata:
-        name: ocs-storagecluster-cephfs
-        annotations:
-          storageclass.kubernetes.io/is-default-class: 'true'
-  when: set_cephfs_default_sc
 
 - name: workload Tasks Complete
   debug:
