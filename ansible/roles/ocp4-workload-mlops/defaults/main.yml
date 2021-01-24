@@ -72,3 +72,50 @@ images_to_seed:
 consumer_app_image: quay.io/kwkoo/kafka-consumer:latest
 
 odh_operator_ver: opendatahub-operator.v0.8.0
+
+ceph_storage:
+  ceph_namespace: openshift-storage
+  storage_requests: 1000Gi
+  ocs_source: redhat-operators
+  ocs_source_namespace: openshift-marketplace
+  set_cephfs_default_sc: true
+  #ocs_version: 4.6.1
+  #ocs_operator_channel: stable-4.6
+  ceph_expected_crds:
+    - ocsinitializations.ocs.openshift.io
+    - storageclusters.ocs.openshift.io
+  ceph_osd:
+    resources:
+      requests:
+        cpu: 2
+        memory: 4Gi
+  ceph_mon:
+    resources:
+      requests:
+        cpu: 1
+        memory: 2Gi
+  ceph_mgr:
+    resources:
+      requests:
+        cpu: 1
+        memory: 2Gi
+  ceph_mds:
+    resources:
+      requests:
+        cpu: 1
+        memory: 2Gi
+  noobaa_core:
+    resources:
+      requests:
+        cpu: 1
+        memory: 2Gi
+  noobaa_db:
+    resources:
+      requests:
+        cpu: 1
+        memory: 2Gi
+  noobaa_endpoint:
+    resources:
+      requests:
+        cpu: 1
+        memory: 2G

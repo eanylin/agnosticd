@@ -104,49 +104,11 @@
   command: helm repo update 
 
 - name: Configure OpenShift Container Storage 4
-  include_role: 
-    name: ocp4-workload-ceph
-  vars:
-    ceph_storage_requests: 1000Gi
-    set_cephfs_default_sc: true
-    ocs_version: 4.4.2
-    ocs_operator_channel: stable-4.4
-    ceph_osd:
-      resources:
-        requests:
-          cpu: 2
-          memory: 4Gi
-    ceph_mon:
-      resources:
-        requests:
-          cpu: 1
-          memory: 2Gi
-    ceph_mgr:
-      resources:
-        requests:
-          cpu: 1
-          memory: 2Gi
-    ceph_mds:
-      resources:
-        requests:
-          cpu: 1
-          memory: 2Gi
-    noobaa_core:
-      resources:
-        requests:
-          cpu: 1
-          memory: 2Gi
-    noobaa_db:
-      resources:
-        requests:
-          cpu: 1
-          memory: 2Gi
-    noobaa_endpoint:
-      resources:
-        requests:
-          cpu: 1
-          memory: 2Gi
-  
+  include_tasks: install-ceph.yaml
+  # include_role: 
+  #   name: ocp4-workload-ceph
+  # vars:
+   
 - name: Add additional catalog source
   k8s:
     state: present
