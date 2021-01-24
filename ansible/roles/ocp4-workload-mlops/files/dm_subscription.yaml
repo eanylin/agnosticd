@@ -10,4 +10,4 @@ spec:
   name: businessautomation-operator
   source: redhat-operators
   sourceNamespace: openshift-marketplace
-  startingCSV: businessautomation-operator.1.4.1
+  #startingCSV: businessautomation-operator.1.4.1
