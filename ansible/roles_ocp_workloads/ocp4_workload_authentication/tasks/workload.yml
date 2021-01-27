@@ -63,7 +63,7 @@
   - name: Generate htpasswd file
     template:
       src: "htpasswd.j2"
-      dest: "/tmp/users.htpasswd"
+      dest: "/home/{{ ansible_user }}/users.htpasswd"
       owner: "{{ ansible_user }}"
       mode: 0664
 
@@ -78,7 +78,7 @@
   - name: Create htpasswd secret from htpasswd file
     shell: >-
       oc create secret generic htpasswd-secret -n openshift-config
-      --from-file=htpasswd=/tmp/{{ ansible_user }}/users.htpasswd
+      --from-file=htpasswd=/home/{{ ansible_user }}/users.htpasswd
 
   - name: Update OAuth Configuration
     k8s:
