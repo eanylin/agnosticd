@@ -21,7 +21,7 @@
 - name: "Create OperatorGroup"
   k8s:
     state: present
-    definition: "{{ lookup('template', 'ceph_operatorgroup.yml.j2') }}"
+    definition: "{{ lookup('template', 'ceph_operatorgroup.yaml.j2') }}"
 
 - name: "Create Subscription"
   k8s:

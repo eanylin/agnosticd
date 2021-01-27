@@ -91,11 +91,11 @@
   command: oc version --client 
   register: oc_output
 
-# OC 4.5 and abc, oc new-app creates deployments
-- name: Check for OC version
-  fail:
-    msg: "OC version should not be 4.5"
-  when: "oc_output.stdout.lower().startswith('client version: 4.5')"
+# # OC 4.5 and abc, oc new-app creates deployments
+# - name: Check for OC version
+#   fail:
+#     msg: "OC version should not be 4.5"
+#   when: "oc_output.stdout.lower().startswith('client version: 4.5')"
     
 - name: Add helm chart repo
   command: helm repo add ltsai https://tsailiming.github.io/helm-charts/

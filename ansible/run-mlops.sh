@@ -6,7 +6,7 @@ USER_COUNT=5
 PASSWORD=r3dh4t1!
 ACTION=create #create # create #remove
 
-# This to reset password
+# # This to reset password
 ansible-playbook -i localhost, -c local ./configs/ocp-workloads/ocp-workload.yml \
     -e "ansible_python_interpreter=`which python`" \
     -e"ACTION=create" \
