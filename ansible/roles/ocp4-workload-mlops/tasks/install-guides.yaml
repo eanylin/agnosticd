@@ -1,7 +1,7 @@
 ---
 - name: search for guide {{ guide }}
   k8s_facts:
-    kind: DeploymentConfig
+    kind: Deployment
     name: guides-{{ guide }}
     namespace: labs-infra
   register: r_guide_dc

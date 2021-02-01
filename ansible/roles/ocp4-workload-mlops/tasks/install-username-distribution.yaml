@@ -1,7 +1,7 @@
 ---
 - name: search for username distribution tool
   k8s_facts:
-    kind: DeploymentConfig
+    kind: Deployment
     name: get-a-username
     namespace: labs-infra
   register: r_gau_dc

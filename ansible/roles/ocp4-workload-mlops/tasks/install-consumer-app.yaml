@@ -9,8 +9,8 @@
 
 - name: Set env from configmap for user {{user}}
   command: |
-    oc set env dc/kafka-consumer --from=cm/mlflow-cm -n "{{ns}}"
+    oc set env deploy/kafka-consumer --from=cm/mlflow-cm -n "{{ns}}"
 
 - name: Set env from secrets for user {{user}}
   command: |
-    oc set env dc/kafka-consumer --from=secret/kie-admin --prefix='BRMS_' -n {{ns}}
+    oc set env deploy/kafka-consumer --from=secret/kie-admin --prefix='BRMS_' -n {{ns}}
