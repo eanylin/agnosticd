@@ -85,8 +85,8 @@
 - name: install global operators
   include_tasks: install-global-operators.yaml
 
-- name: install monitoring
-  include_tasks: install-mon.yaml
+# - name: install monitoring
+#   include_tasks: install-mon.yaml
 
 - name: install jupyterhub
   include_tasks: install-jupyterhub.yaml
