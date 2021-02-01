@@ -16,10 +16,10 @@
     - labs-grafana
     - labs-prometheus
 
-# - name: Create grafana instance
-#   k8s:
-#     state: present    
-#     definition: "{{ lookup('file', './files/grafana_kfdef.yaml' ) | from_yaml }}"
+- name: Create grafana instance
+  k8s:
+    state: present    
+    definition: "{{ lookup('file', './files/grafana_kfdef.yaml' ) | from_yaml }}"
 
 # Deploy Prometheus operator
 - name: Create operator subscription for Prometheus
