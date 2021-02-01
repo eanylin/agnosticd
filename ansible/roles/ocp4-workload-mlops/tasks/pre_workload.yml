@@ -89,16 +89,6 @@
 
 - name: Install helm
   include_tasks: install-helm.yaml
-
-- name: Get OC version
-  command: oc version --client 
-  register: oc_output
-
-# # OC 4.5 and abc, oc new-app creates deployments
-# - name: Check for OC version
-#   fail:
-#     msg: "OC version should not be 4.5"
-#   when: "oc_output.stdout.lower().startswith('client version: 4.5')"
     
 - name: Add helm chart repo
   command: helm repo add ltsai https://tsailiming.github.io/helm-charts/
@@ -108,9 +98,6 @@
 
 - name: Configure OpenShift Container Storage 4
   include_tasks: install-ceph.yaml
-  # include_role: 
-  #   name: ocp4-workload-ceph
-  # vars:
    
 # - name: Add additional catalog source
 #   k8s:
