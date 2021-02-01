@@ -87,6 +87,9 @@
   loop_control:
     loop_var: binary
 
+- name: Install helm
+  include_tasks: install-helm.yaml
+
 - name: Get OC version
   command: oc version --client 
   register: oc_output
