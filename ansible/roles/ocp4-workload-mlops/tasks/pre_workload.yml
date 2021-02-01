@@ -109,13 +109,13 @@
   #   name: ocp4-workload-ceph
   # vars:
    
-- name: Add additional catalog source
-  k8s:
-    state: present
-    definition: "{{ lookup('file', item ) | from_yaml }}"
-  loop:
-    - ./files/grafana_catalogsource.yaml
-    - ./files/prom_catalogsource.yaml
+# - name: Add additional catalog source
+#   k8s:
+#     state: present
+#     definition: "{{ lookup('file', item ) | from_yaml }}"
+#   loop:
+#     - ./files/grafana_catalogsource.yaml
+#     - ./files/prom_catalogsource.yaml
 
 - name: Remove tmp dir
   file:
