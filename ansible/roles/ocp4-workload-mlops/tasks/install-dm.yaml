@@ -44,12 +44,6 @@
 - name: Use the secrets for builder SA
   command: oc secrets link builder pull-secret -n labs-dm
 
-- name: Import the rhdm-kieserver-rhel8
-  command: |
-    oc import-image rhdm-7/rhdm-kieserver-rhel8:7.7.1 \
-    --from=registry.redhat.io/rhdm-7/rhdm-kieserver-rhel8:7.7.1 \
-    --reference-policy=local --confirm -n labs-dm
-
 # Install DM CR
 - name: Create CR for DM
   k8s:
