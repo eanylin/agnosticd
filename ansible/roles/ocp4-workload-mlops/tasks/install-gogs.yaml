@@ -8,7 +8,9 @@
   register: templates
 
 - name: Create gogs template
-  command: "oc create -f {{role_path}}/files/gogs-template.yaml"
+  k8s:
+    state: present
+    definition: "{{ lookup('file', './files/gogs-template.yaml') | from_yaml }}"
   when: templates.resources | length == 0
 
 - name: Check for gogs

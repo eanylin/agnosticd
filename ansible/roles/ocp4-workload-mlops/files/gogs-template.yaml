@@ -1,5 +1,5 @@
+apiVersion: template.openshift.io/v1
 kind: Template
-apiVersion: v1
 metadata:
   annotations:
     description: The Gogs git server (https://gogs.io/)
