@@ -23,8 +23,8 @@ spec:
       replica: 3
       resources:
         requests:
-          cpu: {{ ceph_storage.ceph_osd.resources.requests.cpu }}
-          memory: {{ ceph_storage.ceph_osd.resources.requests.memory }}
+          cpu: {{ ceph_storage.ceph_osd.resources.requests.cpu | default('2') }}
+          memory: {{ ceph_storage.ceph_osd.resources.requests.memory | default('5Gi') }}
       placement: {}
       dataPVCTemplate:
         spec:
