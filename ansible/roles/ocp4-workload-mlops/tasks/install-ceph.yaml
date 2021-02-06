@@ -50,7 +50,7 @@
     namespace: "{{ ceph_storage.ceph_namespace }}"
   register: storagecluster
   until: storagecluster | json_query("resources[0].status.phase=='Succeeded'")
-  retries: 40
+  retries: 60
   delay: 10
 
 - name: "Wait for Ceph CRD's to exist"
@@ -77,7 +77,7 @@
     namespace: "{{ ceph_storage.ceph_namespace }}"
   register: out
   until: out | json_query("resources[0].status.phase=='Ready'")
-  retries: 120
+  retries: 150
   delay: 10
   loop:
     - {api_version: 'noobaa.io/v1alpha1', kind: 'NooBaa', name: 'noobaa'} 
