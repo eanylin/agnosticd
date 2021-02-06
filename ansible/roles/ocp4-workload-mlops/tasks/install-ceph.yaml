@@ -87,7 +87,7 @@
     - {api_version: 'ceph.rook.io/v1', kind: 'CephBlockPool', name: 'ocs-storagecluster-cephblockpool'} 
     - {api_version: 'ocs.openshift.io/v1', kind: 'OCSInitialization', name: 'ocsinit'} 
 
-- name: Set CephFS as default storage class
+- name: Set gp2 as non default storage class
   k8s:
     definition:
       kind: StorageClass
