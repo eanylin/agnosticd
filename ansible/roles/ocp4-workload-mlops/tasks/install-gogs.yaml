@@ -39,6 +39,7 @@
     url: https://gogs-labs-infra.{{ route_subdomain }}/user/sign_up
     method: POST
     body: "user_name={{ gogs_admin_user }}&password={{ gogs_admin_password }}&&retype={{ gogs_admin_password }}&&email={{ gogs_admin_user }}@gogs.com"
+    validate_certs: false
     headers:
       Content-Type: "application/x-www-form-urlencoded"
     status_code: 302,200

@@ -6,6 +6,7 @@
     password: "{{ gogs_pwd }}"
     force_basic_auth: true
     status_code: 200,404
+    validate_certs: false
   register: repo_result
 
 - block:
@@ -19,6 +20,7 @@
         password: "{{ gogs_pwd }}"
         status_code: 200,201
         force_basic_auth: true
+        validate_certs: false
 
     - name: Get AWS credentials for user {{ user }}
       k8s_info:

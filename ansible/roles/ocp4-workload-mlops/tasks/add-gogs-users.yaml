@@ -7,6 +7,7 @@
     password: "{{ gogs_admin_password }}"
     force_basic_auth: true
     body_format: json
+    validate_certs: false
   register: result
   
 - name: Add {{user}} to Gogs
@@ -25,6 +26,7 @@
       password: "{{ gogs_pwd }}"
     body_format: json
     status_code: 200,201,204
+    validate_certs: false
   when: result.json.data | length == 0
 
 - name: Add repo
