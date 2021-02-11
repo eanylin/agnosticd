@@ -59,6 +59,7 @@ user_namespaces:
 binaries:
   - oc
   - curl
+  - git
 
 images_to_seed:
   - name: nbviewer
