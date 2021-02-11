@@ -39,6 +39,9 @@ workshop_che_user_password: 'r3dh4t1!'
 workshop_kie_user_name: admin
 workshop_kie_user_password: 'r3dh4t1!'
 
+grafana_admin_user: root
+grafana_admin_password: secret
+
 infra_projects:
   - labs-infra
   - labs-kafka
