@@ -99,14 +99,6 @@
 - name: Configure OpenShift Container Storage 4
   include_tasks: install-ceph.yaml
    
-# - name: Add additional catalog source
-#   k8s:
-#     state: present
-#     definition: "{{ lookup('file', item ) | from_yaml }}"
-#   loop:
-#     - ./files/grafana_catalogsource.yaml
-#     - ./files/prom_catalogsource.yaml
-
 - name: Remove tmp dir
   file:
     path: "{{ tmp_dir }}"

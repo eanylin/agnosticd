@@ -1,9 +1,0 @@
-apiVersion: operators.coreos.com/v1alpha1
-kind: CatalogSource
-metadata:
-  name: grafana-operator
-  namespace: openshift-marketplace
-spec:
-  displayName: Grafana Operator
-  image: 'quay.io/ltsai/grafana-operator-registry:3.2.0'
-  sourceType: grpc
