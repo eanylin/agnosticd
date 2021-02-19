@@ -143,17 +143,17 @@
   include_tasks: install-amq-streams.yaml
 
 # Install Decision Manager
-- name: Check if Decision Manager (DM) is installed
-  k8s_facts:
-    api_version: app.kiegroup.org/v2
-    kind: KieApp
-    name: dm
-    namespace: labs-dm
-  register: r_dm_cr
+# - name: Check if Decision Manager (DM) is installed
+#   k8s_facts:
+#     api_version: app.kiegroup.org/v2
+#     kind: KieApp
+#     name: dm
+#     namespace: labs-dm
+#   register: r_dm_cr
 
 - name: Install DM
-  when: r_dm_cr.resources | list | length == 0
   include_tasks: install-dm.yaml
+  #when: r_dm_cr.resources | list | length == 0
 
 - name: Install consumer app
   include_tasks: install-consumer-app.yaml
