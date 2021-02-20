@@ -137,8 +137,8 @@
         kind: Job
       register: job_status
       until: job_status | json_query("resources[0].status.succeeded")
-      retries: 40
+      retries: 100
       delay: 10
-      ignore_errors: yes
+      #ignore_errors: yes
 
   when: repo_result.status != 200
