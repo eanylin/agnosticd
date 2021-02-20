@@ -23,7 +23,7 @@
       kind: CustomResourceDefinition
       name: kieapps.app.kiegroup.org
     register: r_dm_crd
-    retries: 200
+    retries: 100
     delay: 10
     until: r_dm_crd.resources | list | length == 1
 
