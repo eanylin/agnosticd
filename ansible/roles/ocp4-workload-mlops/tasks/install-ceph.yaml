@@ -50,7 +50,7 @@
     namespace: "{{ ceph_storage.ceph_namespace }}"
   register: storagecluster
   until: storagecluster | json_query("resources[0].status.phase=='Succeeded'")
-  retries: 60
+  retries: 100
   delay: 10
 
 - name: "Wait for Ceph CRDs to exist"
