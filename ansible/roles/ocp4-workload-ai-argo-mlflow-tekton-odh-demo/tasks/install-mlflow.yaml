@@ -4,7 +4,7 @@
   register: results
 
 - name: Install mlflow 
-  command: helm install mlflow rhmlops/mlflow -n {{demo_ns}}
+  command: helm install mlflow ltsai/mlflow -n {{demo_ns}}
   when: "'deployed' not in results.stdout"
   
 - name: Wait for mlflow to be ready
