@@ -1,8 +1,8 @@
 ---
 # This is used in conjunction with pytorch training and
 # using the operator and deploying the model using Seldon 
-# oc create -f https://raw.githubusercontent.com/rh-mlops-workshop/ai-argo-mlflow-tekton-demo/master/deploy/pytorch-distributed-cpu.yaml
-# oc create -f https://raw.githubusercontent.com/rh-mlops-workshop/ai-argo-mlflow-tekton-demo/master/deploy/serving-pytorch-distributed-cpu-seldon.yaml
+# oc create -f https://raw.githubusercontent.com/tsailiming/ai-argo-mlflow-tekton-demo/master/deploy/pytorch-distributed-cpu.yaml
+# oc create -f https://raw.githubusercontent.com/tsailiming/ai-argo-mlflow-tekton-demo/master/deploy/serving-pytorch-distributed-cpu-seldon.yaml
 
 - name: Create mnist web app
   shell: |
