@@ -19,8 +19,8 @@
     -e OPENSHIFT_USER_NAME={{ workshop_openshift_user_name }} \
     -e OPENSHIFT_USER_PASSWORD={{ workshop_openshift_user_password }} \
     -e LOG_TO_STDOUT=true \
-    -e CONTENT_URL_PREFIX='https://raw.githubusercontent.com/eanylin/ocp-al-ml-workshop-{{ guide }}-guides/master' \
-    -e WORKSHOPS_URLS='https://raw.githubusercontent.com/eanylin/ocp-al-ml-workshop-{{guide}}-guides/master/_ocp-ai-ml-workshop.yml' \
+    -e CONTENT_URL_PREFIX='https://raw.githubusercontent.com/rh-mlops-workshop/ocp-al-ml-workshop-{{ guide }}-guides/master' \
+    -e WORKSHOPS_URLS='https://raw.githubusercontent.com/rh-mlops-workshop/ocp-al-ml-workshop-{{guide}}-guides/master/_ocp-ai-ml-workshop.yml' \
     -e JUPYTERHUB_URL=https://jupyterhub-labs-infra.{{ route_subdomain }} \
     -e GRAFANA_URL="https://grafana-route-labs-grafana.{{ route_subdomain }}//d/U1cSDzyZz/prediction-analytics" \
     -e USER_MODEL_REPO_NAME={{user_source_repo_name}} \
