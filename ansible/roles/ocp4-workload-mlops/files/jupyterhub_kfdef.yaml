@@ -22,4 +22,4 @@ spec:
       name: notebook-images
   repos:
     - name: manifests
-      uri: https://github.com/tsailiming/odh-manifests/tarball/master
+      uri: https://github.com/rh-mlops-workshop/odh-manifests/tarball/master

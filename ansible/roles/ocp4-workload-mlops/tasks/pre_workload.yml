@@ -91,7 +91,7 @@
   include_tasks: install-helm.yaml
     
 - name: Add helm chart repo
-  command: helm repo add ltsai https://tsailiming.github.io/helm-charts/
+  command: helm repo add rhmlops https://rh-mlops-workshop.github.io/helm-charts/
 
 - name: Update helm repo
   command: helm repo update 

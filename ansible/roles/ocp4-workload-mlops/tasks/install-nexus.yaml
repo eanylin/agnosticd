@@ -6,7 +6,7 @@
 # Each image is about 500+ MB
 - name: Install nexus 
   command: |
-    helm install nexus ltsai/nexus -n labs-nexus 
+    helm install nexus rhmlops/nexus -n labs-nexus 
     --set sonatype-nexus.nexus.resources.requests.cpu=2
     --set sonatype-nexus.nexus.resources.requests.memory=4Gi    
     --set sonatype-nexus.persistence.storageSize={{((users | length) * 15)| round(0, 'ceil') | int}}Gi

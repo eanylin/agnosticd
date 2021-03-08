@@ -5,7 +5,7 @@
   register: results
 
 - name: Install mlflow 
-  command: helm install mlflow ltsai/mlflow -n {{item.item}}-dev  
+  command: helm install mlflow rhmlops/mlflow -n {{item.item}}-dev  
   when: "'deployed' not in item.stdout"
   loop: "{{ results.results }}"
   loop_control:
